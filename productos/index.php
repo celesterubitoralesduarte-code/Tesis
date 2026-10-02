@@ -53,11 +53,10 @@ unset($_SESSION['icono']);
                     <!-- /.card-tools -->
                   </div>
                   <!-- /.card-header -->
-                  <div class="card-body" style="box-sizing: border-box; display: block;">
-                    
+                  <div class="card-body" style="box-sizing: border-box; display: block;">                    
                        <table id="example1" class="table table-bordered table-striped">
-                  <thead>
-                  <tr>
+                      <thead>
+                     <tr>
                          <th><center>Nro</center></th>
                          <th><center>Código</center></th>                        
                          <th><center>Nombre</center></th>
@@ -70,8 +69,8 @@ unset($_SESSION['icono']);
                          <th><center>Unidad de Medida</center></th>
                          <th><center>Acciones</center></th>
                       </tr>
-                  </thead>
-                    <tbody>
+                     </thead>
+                     <tbody>
                         <?php  
                         $contador = 0;
                         foreach ($productos_datos as $productos_datos){ 
@@ -95,27 +94,27 @@ unset($_SESSION['icono']);
                             <td><?php echo $productos_datos['nomProductos'];?></td>
                             
                           <!-- Columna Stock -->
-<td>
-    <?php 
-    if ($productos_datos['unidadMedida'] == 'Unidades (Und)') {
-        echo number_format((float)$productos_datos['stockProductos'], 0, ',', '.');
-    } else {
-        // Muestra enteros sin decimales sobrantes (.000) o decimales reales si existen
-        echo number_format((float)$productos_datos['stockProductos'], (floor($productos_datos['stockProductos']) == $productos_datos['stockProductos'] ? 0 : 3), ',', '.');
-    }
-    ?>
-</td>
+                        <td>
+                          <?php 
+                             if ($productos_datos['unidadMedida'] == 'Unidades (Und)') {
+                                 echo number_format((float)$productos_datos['stockProductos'], 0, ',', '.');
+                              } else {
+                             // Muestra enteros sin decimales sobrantes (.000) o decimales reales si existen
+                                echo number_format((float)$productos_datos['stockProductos'], (floor($productos_datos['stockProductos']) == $productos_datos['stockProductos'] ? 0 : 3), ',', '.');
+                              }
+                           ?>
+                      </td>
 
-<!-- Columna Stock Mínimo -->
-<td>
-    <?php 
-    if ($productos_datos['unidadMedida'] == 'Unidades (Und)') {
-        echo number_format((float)$productos_datos['stockMinimo'], 0, ',', '.');
-    } else {
-        echo number_format((float)$productos_datos['stockMinimo'], (floor($productos_datos['stockMinimo']) == $productos_datos['stockMinimo'] ? 0 : 3), ',', '.');
-    }
-    ?>
-</td>
+                         <!-- Columna Stock Mínimo -->
+                         <td>
+                             <?php 
+                               if ($productos_datos['unidadMedida'] == 'Unidades (Und)') {
+                                  echo number_format((float)$productos_datos['stockMinimo'], 0, ',', '.');
+                                 } else {
+                                 echo number_format((float)$productos_datos['stockMinimo'], (floor($productos_datos['stockMinimo']) == $productos_datos['stockMinimo'] ? 0 : 3), ',', '.');
+                                }
+                              ?>
+                         </td>
 
                             <!-- Precios en Guaraníes Paraguayos (Gs. 72.000, Gs. 85.000, etc.) -->
                             <td><?php echo "Gs. " . number_format($precioCompra, 0, ',', '.'); ?></td>
@@ -142,7 +141,7 @@ unset($_SESSION['icono']);
                         ?>
                      </tbody>
                  
-                </table>
+                      </table>
                   </div>
                   <!-- /.card-body -->
                 </div> 

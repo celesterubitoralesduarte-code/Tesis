@@ -81,7 +81,7 @@ unset($_SESSION['icono']);
                             <td><?php echo $contador; ?></td>
                             <td><?php echo $compras_dato['nro_compra']; ?></td>
                             <td>
-                                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal-producto<?php echo $id_compra; ?>">
+                                <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#modal-producto<?php echo $id_compra; ?>">
                                     <?php echo $compras_dato['nombre_producto']; ?>
                                 </button>
                  <!-- Modal para visualizar datos de los productos -->
@@ -162,15 +162,17 @@ unset($_SESSION['icono']);
         </div>
     </div>
 </div>
+<!--Modal-->
                             </td>
                             <td><?php echo $compras_dato['fecha_compra']; ?></td>
                             <td>
-                                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modal-proveedor<?php echo $id_compra; ?>">
+                                 <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#modal-proveedor<?php echo $id_compra; ?>">
                                     <?php echo $compras_dato['nombre_proveedor']; ?>
                                 </button>
-                                <!-- Modal para visualizar datos de los productos -->
-<div class="modal fade" id="modal-producto<?php echo $id_compra; ?>">
-    <div class="modal-dialog modal-lg">
+                               
+                                 <!-- Modal para visualizar datos de los proveedor -->
+<div class="modal fade" id="modal-proveedor<?php echo $id_compra; ?>">
+    <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header" style="background-color: #07b0d6; color: white">
                 <h4 class="modal-title">Datos del Proveedor</h4>
@@ -179,16 +181,60 @@ unset($_SESSION['icono']);
                 </button>
             </div>
             <div class="modal-body">
-                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="">Nombre del proveedor</label>
+                            <input type="text" value="<?php echo $compras_dato['nombre_proveedor'];?>" class="form-control" disabled>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                         <div class="form-group">
+                            <label for="">Celular del proveedor</label>
+                            <a href="https://wa.me/595<?php echo $compras_dato['celular_proveedor'];?>" target="_blank" class="btn btn-success form-control">
+                                <i class="fa fa-phone"></i>
+                                <?php echo $compras_dato['celular_proveedor'];?>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                         <div class="form-group">
+                            <label for="">Teléfono del proveedor</label>
+                            <input type="text" value="<?php echo $compras_dato['telefono_proveedor'];?>" class="form-control" disabled>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                         <div class="form-group">
+                            <label for="">Empresa</label>
+                            <input type="text" value="<?php echo $compras_dato['empresa'];?>" class="form-control" disabled>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                         <div class="form-group">
+                            <label for="">Email del proveedor</label>
+                            <input type="text" value="<?php echo $compras_dato['email_proveedor'];?>" class="form-control" disabled>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                         <div class="form-group">
+                            <label for="">Dirección</label>
+                            <input type="text" value="<?php echo $compras_dato['direccion_proveedor'];?>" class="form-control" disabled>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
-                               
+<!--Modal-->
                             </td>
                             <td><?php echo $compras_dato['comprobante']; ?></td>
-                            <td><?php echo $compras_dato['idTrabajadores']; ?></td>
-                            <td><?php echo $compras_dato['precio_compra']; ?></td>
+                            <td><?php echo $compras_dato['nombre_usuario']; ?></td>
+                            <td><?php echo number_format($compras_dato['precio_compra_producto'], 0, ',', '.'); ?></td>
                             <td><?php echo $compras_dato['cantidad']; ?></td>
                             <td>
                                 <center>
