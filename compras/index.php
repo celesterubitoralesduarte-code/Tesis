@@ -122,18 +122,18 @@ unset($_SESSION['icono']);
                             <input type="text" value="<?php echo (int)$compras_dato['stock_minimo']; ?>" class="form-control" disabled>
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="">Precio Compra</label>
-                            <input type="text" value="<?php echo number_format($compras_dato['precio_compra_producto'], 0, ',', '.'); ?>" class="form-control" disabled>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="">Precio Venta</label>
-                            <input type="text" value="<?php echo number_format($compras_dato['precio_venta'], 0, ',', '.'); ?>" class="form-control" disabled>
-                        </div>
-                    </div>
+                   <div class="col-md-4">
+    <div class="form-group">
+        <label for="">Precio Compra</label>
+        <input type="text" value="<?php echo "Gs. " . number_format($compras_dato['precio_compra_producto'] * 1000, 0, ',', '.'); ?>" class="form-control" disabled>
+    </div>
+</div>
+<div class="col-md-4">
+    <div class="form-group">
+        <label for="">Precio Venta</label>
+        <input type="text" value="<?php echo "Gs. " . number_format($compras_dato['precio_venta'] * 1000, 0, ',', '.'); ?>" class="form-control" disabled>
+    </div>
+</div>
                 </div>
                 <div class="row">
                     <div class="col-md-4">

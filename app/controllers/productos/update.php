@@ -20,12 +20,10 @@ $codigo = !empty($_POST['codigo']) ? $_POST['codigo'] : null;
 $nomProductos = !empty($_POST['nomProductos']) ? $_POST['nomProductos'] : null;
 $idTrabajadores = !empty($_POST['idTrabajadores']) ? $_POST['idTrabajadores'] : null;
 
-// 2. Limpieza de Stocks: Se remueven puntos de miles antes de convertir el decimal
-$stockProductos_limpio = str_replace('.', '', $_POST['stockProductos'] ?? 0);
-$stockMinimo_limpio    = str_replace('.', '', $_POST['stockMinimo'] ?? 0);
-
-$stockProductos = (float)str_replace(',', '.', $stockProductos_limpio);
-$stockMinimo    = (float)str_replace(',', '.', $stockMinimo_limpio);
+// 2. Limpieza de Stocks: solo se cambia la coma decimal por punto y se convierte a float.
+// Si viene como entero puro (ej: 10, 59, 10000, 59000), se guarda tal cual sin eliminar caracteres.
+$stockProductos = (float)str_replace(',', '.', $_POST['stockProductos'] ?? 0);
+$stockMinimo    = (float)str_replace(',', '.', $_POST['stockMinimo'] ?? 0);
 
 // 3. Limpieza de Precios: Se eliminan puntos y comas de formato visual
 $precioCompra_Limpio = (float)preg_replace('/[^0-9]/', '', $_POST['precioCompra'] ?? 0);

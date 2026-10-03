@@ -76,16 +76,15 @@ unset($_SESSION['icono']);
                         foreach ($productos_datos as $productos_datos){ 
                             $idProductos = $productos_datos['idProductos'];
 
-                            // Corrección automática por código para montos menores a 1000 (ej: 72 -> 72000)
                             $precioCompra = $productos_datos['precioCompra'];
-                            if ($precioCompra > 0 && $precioCompra < 1000) {
+                              if ($precioCompra > 0 && $precioCompra < 1000) {
                                 $precioCompra = $precioCompra * 1000;
                             }
-
                             $precioVenta = $productos_datos['precioVenta'];
-                            if ($precioVenta > 0 && $precioVenta < 1000) {
+                             if ($precioVenta > 0 && $precioVenta < 1000) {
                                 $precioVenta = $precioVenta * 1000;
                             }
+
                         ?>
                           
                          <tr>
@@ -97,10 +96,10 @@ unset($_SESSION['icono']);
                         <td>
                           <?php 
                              if ($productos_datos['unidadMedida'] == 'Unidades (Und)') {
-                                 echo number_format((float)$productos_datos['stockProductos'], 0, ',', '.');
+                                 echo number_format((float)$productos_datos['stockProductos'], 0, ',', '');
                               } else {
                              // Muestra enteros sin decimales sobrantes (.000) o decimales reales si existen
-                                echo number_format((float)$productos_datos['stockProductos'], (floor($productos_datos['stockProductos']) == $productos_datos['stockProductos'] ? 0 : 3), ',', '.');
+                                echo number_format((float)$productos_datos['stockProductos'], (floor($productos_datos['stockProductos']) == $productos_datos['stockProductos'] ? 0 : 3), ',', '');
                               }
                            ?>
                       </td>
@@ -109,9 +108,9 @@ unset($_SESSION['icono']);
                          <td>
                              <?php 
                                if ($productos_datos['unidadMedida'] == 'Unidades (Und)') {
-                                  echo number_format((float)$productos_datos['stockMinimo'], 0, ',', '.');
+                                  echo number_format((float)$productos_datos['stockMinimo'], 0, ',', '');
                                  } else {
-                                 echo number_format((float)$productos_datos['stockMinimo'], (floor($productos_datos['stockMinimo']) == $productos_datos['stockMinimo'] ? 0 : 3), ',', '.');
+                                 echo number_format((float)$productos_datos['stockMinimo'], (floor($productos_datos['stockMinimo']) == $productos_datos['stockMinimo'] ? 0 : 3), ',', '');
                                 }
                               ?>
                          </td>
