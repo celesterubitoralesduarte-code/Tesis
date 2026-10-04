@@ -6,6 +6,13 @@ include_once __DIR__ . '/../app/controllers/productos/listado_de_productos.php';
 include_once __DIR__ . '/../app/controllers/proveedores/listado_de_proveedores.php';
 include_once __DIR__ . '/../app/controllers/compras/cargar_compra.php';
 
+// Limpiamos los valores de cualquier texto o unidad de medida que traigan desde la BD
+$stock_num    = floatval(preg_replace('/[^0-9.]/', '', $stock ?? 0));
+$cantidad_num = floatval(preg_replace('/[^0-9.]/', '', $cantidad ?? 0));
+
+// Calculamos el stock base puro (sin texto)
+$stock_base = $stock_num - $cantidad_num;
+
 // Función para dar formato de 5 dígitos con ceros a la izquierda
 function ceros(int $numero){
     return str_pad($numero, 5, "0", STR_PAD_LEFT);
@@ -21,6 +28,7 @@ $row_max_codigo = $query_max_codigo->fetch(PDO::FETCH_ASSOC);
 
 $siguiente_numero = ($row_max_codigo['max_codigo'] ?? 0) + 1;
 $nuevo_codigo = "P-" . ceros($siguiente_numero);
+
 ?>
 
 <!-- Content Wrapper. Contains page content -->
@@ -156,7 +164,7 @@ $nuevo_codigo = "P-" . ceros($siguiente_numero);
                         <div class="row" style="font-size: 12px">
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <input type="text" id="idProductos" class="form-control" hidden>
+                                    <input type="text" value="<?php echo $idProductos;?>" id="idProductos" class="form-control" hidden>
                                     <label for="">Código:</label>
                                     <input type="text" class="form-control" value="<?php echo $codigo;?>" id="codigo" disabled>
                                 </div>
@@ -300,9 +308,9 @@ $nuevo_codigo = "P-" . ceros($siguiente_numero);
                             <div class="row">
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <input type="text" id="idProveedores" class="form-control" hidden>
+                                        <input type="text" value="<?php echo $idProveedores_tabla;?>" id="idProveedores" class="form-control" hidden>
                                         <label for="">Nombre del Proveedor</label>
-                                        <input type="text" value="<?php echo $nombre_proveedor;?>" id="nombre_proveedor" class="form-control" disabled>
+                                        <input type="text" value="<?php echo $nombre_proveedor_tabla;?>" id="nombre_proveedor" class="form-control" disabled>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
@@ -389,24 +397,30 @@ $nuevo_codigo = "P-" . ceros($siguiente_numero);
                                   <input type="text" class="form-control formato-precio" value="<?php echo number_format($precio_compra, 0, ',', '.'); ?>" id="precio_compra_controlador">
                               </div>
 
-                              <div class="row">
-                                  <div class="col-md-6">
-                                      <div class="form-group">
-                                          <label for="">Stock actual</label>
-                                          <input type="text" style="background-color: #fff819; text-align: center;" value="<?php echo formatearStock($stock, $unidad_medida); ?>" id="stock_actual_2" class="form-control" disabled>
-                                      </div>
-                                  </div>
-                                  <div class="col-md-6">
-                                      <div class="form-group">
-                                          <label for="">Stock Total</label>
-                                          <input type="text" style="text-align: center;" id="stock_total" class="form-control" disabled>
-                                      </div>
-                                  </div>
-                              </div>
+                            <div class="row">
+    <div class="col-md-6">
+        <div class="form-group">
+            <label for="">Stock Actual:</label>
+            <!-- 1. Cambiamos el id a stock_actual_2 para que coincida con tu script -->
+            <input type="text" class="form-control" 
+                   value="<?php echo formatearStock($stock_base, $unidad_medida); ?>" 
+                   id="stock_actual_2" style="background-color: #fff819;" disabled>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+       <div class="form-group">
+    <label for="">Stock Total:</label>
+    <input type="text" class="form-control" 
+           value="<?php echo formatearStock($stock_base + $cantidad_num, $unidad_medida); ?>" 
+           id="stock_total" disabled>
+</div>
+    </div>
+</div>
 
                               <div class="form-group">
                                   <label for=""> Cantidad de la Compra </label>
-                                  <input type="number" step="any" value="<?php echo floatval($cantidad); ?>" id="cantidad_compra" style="text-align: center" class="form-control">
+                                  <input type="text" step="any" value="<?php echo floatval($cantidad); ?>" id="cantidad_compra" style="text-align: center" class="form-control">
                               </div>
 
                               <div class="form-group">
@@ -418,17 +432,19 @@ $nuevo_codigo = "P-" . ceros($siguiente_numero);
                       <hr>
                       <div class="col-md-12">
                           <div class="form-group">
-                              <button class="btn btn-primary btn-block" id="btn_guardar_compra">Guardar compra</button>
+                              <button class="btn btn-success btn-block" id="btn_actualizar_compra">Actualizar compra</button>
                           </div>
                           <div id="respuesta_create"></div>
                       </div>
                   </div>
               </div>
+          <div id="respuesta_update"></div>
           </div>
-
         </div>
+       
       </div>
     </div>
+    
 </div>
 
 <?php include('../layout/parte2.php');?>
@@ -576,25 +592,38 @@ $nuevo_codigo = "P-" . ceros($siguiente_numero);
             table2.columns.adjust().responsive.recalc();
         });
 
-        // 7. Evento para el cálculo dinámico al escribir la cantidad
-        $('#cantidad_compra').on('keyup change input', function () {
-            sumacantidades();   
-        });
+       // 7. Evento para el cálculo dinámico al escribir, cambiar o interactuar con la cantidad
+$(document).on('keyup change input', '#cantidad_compra', function () {
+    sumacantidades();   
+});
 
-        function sumacantidades() {
-            // Extraer sólo el número flotante quitando textos como 'Kg' o 'Und'
-            var stock_actual_val = parseFloat($('#stock_actual_2').val()) || 0;
-            var stock_compra_val = parseFloat($('#cantidad_compra').val()) || 0;
-            var unidad = $('#unidad_medida').val() || '';
+function sumacantidades() {
+    // 1. Obtener valores limpios de texto (elimina 'Und', 'Kg', 'g', espacios, etc.)
+    var stock_actual_raw = $('#stock_actual_2').val() || '0';
+    var cantidad_compra_raw = $('#cantidad_compra').val() || '0';
+    var unidad = $('#unidad_medida').val() || '';
 
-            var total = stock_actual_val + stock_compra_val;
+    // Convertir comas a puntos por si el usuario escribe decimales con coma (ej. 1,5)
+    stock_actual_raw = stock_actual_raw.toString().replace(',', '.').replace(/[^0-9.]/g, '');
+    cantidad_compra_raw = cantidad_compra_raw.toString().replace(',', '.').replace(/[^0-9.]/g, '');
 
-            // Mostrar resultado formateado
-            $('#stock_total').val(formatearStockJS(total, unidad));
-        }
+    var stock_actual_val = parseFloat(stock_actual_raw) || 0;
+    var stock_compra_val = parseFloat(cantidad_compra_raw) || 0;
+
+    // 2. Realizar la suma matemática
+    var total = stock_actual_val + stock_compra_val;
+
+    // 3. Asignar el total formateado o como texto plano si la función no existe
+    if (typeof formatearStockJS === 'function') {
+        $('#stock_total').val(formatearStockJS(total, unidad));
+    } else {
+        $('#stock_total').val(total + ' ' + unidad);
+    }
+}
 
         // 8. Evento de Guardar Compra (AJAX)
-        $('#btn_guardar_compra').click(function () {
+        $('#btn_actualizar_compra').click(function () {
+            var id_compra = '<?php echo $id_compra;?>';
             var idProductos = $('#idProductos').val();
             var idProveedores = $('#idProveedores').val();
             var nro_compra = $('#nro_compra').val();
@@ -609,7 +638,7 @@ $nuevo_codigo = "P-" . ceros($siguiente_numero);
 
             if(idProductos == ""){
                 $('#idProductos').focus();
-                alert("Debe llenar todos los campos");
+                alert("Debe llenar todos los campos productos");
             }else if(fecha_compra == ""){
                 $('#fecha_compra').focus();
                 alert("Debe llenar todos los campos");
@@ -623,8 +652,9 @@ $nuevo_codigo = "P-" . ceros($siguiente_numero);
                 $('#cantidad_compra').focus();
                 alert("Debe llenar todos los campos");
             }else{
-                var url = "../app/controllers/compras/create.php";
+                var url = "../app/controllers/compras/update.php";
                 $.get(url, {
+                    id_compra: id_compra, 
                     idProductos: idProductos,
                     idProveedores: idProveedores,
                     nro_compra: nro_compra,
@@ -635,7 +665,7 @@ $nuevo_codigo = "P-" . ceros($siguiente_numero);
                     cantidad_compra: cantidad_compra,
                     stock_total: stock_total
                 }, function (datos) {
-                    $('#respuesta_create').html(datos);
+                    $('#respuesta_update').html(datos);
                 });
             }
         });

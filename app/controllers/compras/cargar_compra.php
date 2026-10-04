@@ -6,6 +6,7 @@ $id_compra_get = $_GET['id'] ?? null;
 
 $sql_compras = "SELECT 
     co.id_compra as id_compra,
+    co.idProductos as idProductos,
     co.nro_compra as nro_compra,
     co.fecha_compra as fecha_compra,
     co.idProveedores as idProveedores,
@@ -42,6 +43,8 @@ $squery_compras->execute([':id_compra' => $id_compra_get]);
 $compras_datos = $squery_compras->fetchAll(PDO::FETCH_ASSOC);
 
 foreach ($compras_datos as $compras_dato){
+    $id_compra = $compras_dato['id_compra'];
+    $idProductos = $compras_dato['idProductos'];
     $nro_compra = $compras_dato['nro_compra'];
     $codigo = $compras_dato['codigo'];
     $nombre_producto = $compras_dato['nombre_producto'];
@@ -74,7 +77,8 @@ foreach ($compras_datos as $compras_dato){
     $stock_minimo = floatval($compras_dato['stock_minimo']) . ' ' . $sigla;
     $cantidad = floatval($compras_dato['cantidad']) . ' ' . $sigla;
 
-    $nombre_proveedor = $compras_dato['nombre_proveedor'];
+    $idProveedores_tabla = $compras_dato['idProveedores'];
+    $nombre_proveedor_tabla = $compras_dato['nombre_proveedor'];
     $celular_proveedor = $compras_dato['celular_proveedor'];
     $telefono_proveedor = $compras_dato['telefono_proveedor'];
     $empresa = $compras_dato['empresa'];

@@ -44,9 +44,9 @@ $nuevo_codigo = "P-" . ceros($siguiente_numero);
           
           <!-- COLUMNA IZQUIERDA (DATOS DEL PRODUCTO Y PROVEEDOR) -->
           <div class="col-md-9">
-             <div class="card card-info">
+             <div class="card card-danger">
                   <div class="card-header">
-                    <h3 class="card-title">Datos de la Compra</h3>
+                    <h3 class="card-title">¿Estas seguro de Eliminar la Compra?</h3>
                     <div class="card-tools">
                       <button type="button" class="btn btn-tool" data-lte-toggle="card-collapse" aria-label="Contraer tarjeta">
                         <i data-lte-icon="expand" class="bi bi-plus-lg"></i>
@@ -62,7 +62,7 @@ $nuevo_codigo = "P-" . ceros($siguiente_numero);
                         <div class="row" style="font-size: 12px">
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <input type="text" id="idProductos" class="form-control" hidden>
+                                    <input type="text" value="<?php echo $idProductos; ?>" id="idProductos" class="form-control" hidden>
                                     <label for="">Código:</label>
                                     <input type="text" class="form-control" value="<?php echo $codigo; ?>" id="codigo" disabled>
                                 </div>
@@ -188,7 +188,7 @@ $nuevo_codigo = "P-" . ceros($siguiente_numero);
 
           <!-- COLUMNA DERECHA (DATOS DE LA COMPRA) -->
           <div class="col-md-3">
-              <div class="card card-outline card-primary">
+              <div class="card card-outline card-danger">
                   <div class="card-header">
                       <h3 class="card-title">Detalle de la Compra</h3>
                       <div class="card-tools">
@@ -236,9 +236,13 @@ $nuevo_codigo = "P-" . ceros($siguiente_numero);
                                   <input type="text" class="form-control" value="<?php echo $nombre_usuario ?? ''; ?>" disabled>
                               </div>
                           </div>
+                           <div class="form-group">
+                                 <button class="btn btn-danger btn-block" id="btn_eliminar"><i class="fa fa-trash"></i> Eliminar</button>
+                              </div>
+                          </div>
+                          <div id="respuesta_delete"></div>
                       </div>
-                        <hr>
-                          <div class="col-md-12">
+                        
               </div>
               </div>
           </div>
@@ -251,3 +255,33 @@ $nuevo_codigo = "P-" . ceros($siguiente_numero);
 <?php include('../layout/parte2.php');?>
 <?php include('../layout/mensajes.php');?>
 
+<script>
+   $('#btn_eliminar').click(function () {
+    var id_compra = '<?php echo $id_compra_get; ?>';
+    var idProductos = $('#idProductos').val();
+
+   Swal.fire({
+    title: '¿Está seguro de eliminar la compra?',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Si deseo eliminar'
+}).then((result) => {
+    if (result.isConfirmed) {
+        Swal.fire(
+            eliminar(),
+            'Compra eliminada',
+            'success'
+        )
+    }
+});
+
+function eliminar() {
+    var url = "../app/controllers/compras/delete.php";
+    $.get(url, {id_compra:id_compra, idProductos:idProductos}, function (datos) {
+        $('#respuesta_delete').html(datos);
+    });
+}
+});
+</script>
