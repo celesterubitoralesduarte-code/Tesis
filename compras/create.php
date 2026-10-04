@@ -398,11 +398,11 @@ $nuevo_codigo = "P-" . ceros($siguiente_numero);
                              <div class="row">
     <div class="col-md-6">
         <div class="form-group">
-            <label for="">Stock actual</label>
+            <label for="">Stock Actual</label>
             <input type="text" style="background-color: #fff819; text-align: center;" value="" id="stock_actual_2" class="form-control" disabled>
         </div>
     </div>
-</div>
+
                                   <div class="col-md-6">
                                       <div class="form-group">
                                           <label for="">Stock Total</label>
@@ -498,8 +498,6 @@ $nuevo_codigo = "P-" . ceros($siguiente_numero);
             "searching": true,
             "paging": true
         });
-
-        // Evento de selección para Productos
      // Evento de selección para Productos
 $('#example1').on('click', '.btn-seleccionar', function () {
     var idProductos = $(this).data('id');

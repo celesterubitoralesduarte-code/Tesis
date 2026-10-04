@@ -7,6 +7,9 @@ include('app/controllers/usuarios/listado_usuarios.php');
 include('app/controllers/roles/listado_roles.php');
 include('app/controllers/productos/listado_de_productos.php');
 include('app/controllers/proveedores/listado_de_proveedores.php');
+include('app/controllers/compras/listado_de_compras.php');
+include('app/controllers/ventas/listado_de_ventas.php');
+include('app/controllers/clientes/listado_de_clientes.php');
 ?>
 <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
@@ -117,31 +120,112 @@ include('app/controllers/proveedores/listado_de_proveedores.php');
     </div>
 
 
-    <div class="col-lg-3 col-6">
-        <div class="small-box bg-dark">
-            <div class="inner">
-              <?php
-              $contador_de_proveedores = 0;
-              foreach($proveedores_datos as $proveedores_dato){
-            $contador_de_proveedores = $contador_de_proveedores + 1;
-              }
-              ?>
-                <h3><?php echo $contador_de_proveedores;?></h3>
-                <p>Proveedores Registrados</p>
-            </div>
+   <div class="col-lg-3 col-6">
+    <div class="small-box bg-dark"> <!-- O la clase de color que uses para proveedores -->
+        <div class="inner">
+            <?php
+            $contador_de_proveedores = 0;
+            foreach($proveedores_datos as $proveedores_dato){
+                $contador_de_proveedores = $contador_de_proveedores + 1;
+            }
+            ?>
+            <h3><?php echo $contador_de_proveedores;?></h3>
+            <p>Proveedores Registrados</p>
+        </div>
 
-            <a href="proveedores">
-              <div class="icon">
+        <a href="proveedores">
+            <div class="icon">
                 <i class="fas fa-car"></i>
             </div>
-            </a>
+        </a>
 
-            <a href="proveedores" class="small-box-footer">
-                Más detalle <i class="fas fa-arrsow-circle-right"></i>
-                <a href="proveedores">
-            </a>
-        </div>
+        <a href="proveedores" class="small-box-footer">
+            Más detalle <i class="fas fa-arrow-circle-right"></i>
+        </a>
     </div>
+</div>
+
+
+<div class="col-lg-3 col-6">
+    <div class="small-box bg-danger"> 
+        <div class="inner">
+          <?php
+              $contador_de_compras = 0;
+              foreach($compras_datos as $compras_dato){
+            $contador_de_compras = $contador_de_compras + 1;
+              }
+              ?>
+                <h3><?php echo $contador_de_compras;?></h3>
+                <p>Compras Registradas</p>
+            </div>
+
+        <a href="compras/create.php">
+            <div class="icon">
+                <i class="fas fa-cart-plus"></i>
+            </div>
+        </a>
+
+        <a href="compras" class="small-box-footer">
+            Más detalle <i class="fas fa-arrow-circle-right"></i>
+        </a>
+    </div>
+</div>
+
+
+
+<div class="col-lg-3 col-6">
+    <div class="small-box bg-success"> 
+        <div class="inner">
+          <?php
+              $contador_de_ventas = 0;
+              foreach($ventas_datos as $ventas_dato){
+            $contador_de_ventas = $contador_de_ventas + 1;
+              }
+              ?>
+                <h3><?php echo $contador_de_ventas;?></h3>
+                <p>Ventas Registradas</p>
+            </div>
+
+        <a href="ventas/create.php">
+            <div class="icon">
+                <i class="fas fa-shopping-basket"></i>
+            </div>
+        </a>
+
+        <a href="ventas" class="small-box-footer">
+            Más detalle <i class="fas fa-arrow-circle-right"></i>
+        </a>
+    </div>
+</div>
+
+<div class="col-lg-3 col-6">
+    <div class="small-box bg-warning"> 
+        <div class="inner">
+          <?php
+              $contador_de_clientes = 0;
+              foreach($clientes_datos as $clientes_dato){
+            $contador_de_clientes = $contador_de_clientes + 1;
+              }
+              ?>
+                <h3><?php echo $contador_de_clientes;?></h3>
+                <p>Clientes Registrados</p>
+            </div>
+
+        <a href="clientes/create.php">
+            <div class="icon">
+                <i class="fas fa-user-friends"></i>
+            </div>
+        </a>
+
+        <a href="clientes" class="small-box-footer">
+            Más detalle <i class="fas fa-arrow-circle-right"></i>
+        </a>
+    </div>
+</div>
+
+
+    
+
 
 </div>
         <!-- /.row -->

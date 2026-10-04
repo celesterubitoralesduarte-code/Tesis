@@ -259,6 +259,8 @@ $nuevo_codigo = "P-" . ceros($siguiente_numero);
    $('#btn_eliminar').click(function () {
     var id_compra = '<?php echo $id_compra_get; ?>';
     var idProductos = $('#idProductos').val();
+    var cantidad_compra = '<?php echo formatearStock($cantidad, $unidad_medida); ?>';
+    var stock_actual = '<?php echo formatearStock($stock, $unidad_medida); ?>';
 
    Swal.fire({
     title: '¿Está seguro de eliminar la compra?',
@@ -279,7 +281,7 @@ $nuevo_codigo = "P-" . ceros($siguiente_numero);
 
 function eliminar() {
     var url = "../app/controllers/compras/delete.php";
-    $.get(url, {id_compra:id_compra, idProductos:idProductos}, function (datos) {
+    $.get(url, {id_compra:id_compra, idProductos:idProductos, cantidad_compra:cantidad_compra, stock_actual:stock_actual}, function (datos) {
         $('#respuesta_delete').html(datos);
     });
 }

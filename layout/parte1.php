@@ -234,6 +234,53 @@ scratch. This page gets rid of all links and provides the needed markup only.
           </li>
 
 
+
+             <li class="nav-item">
+            <a href="#" class="nav-link active">
+             <i class="nav-icon fas fa-shopping-basket"></i>
+              <p>
+                Ventas
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="<?php echo $URL;?>ventas" class="nav-link ">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Listado de Ventas</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="<?php echo $URL;?>ventas/create.php" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Realizar Venta</p>
+                </a>
+             </li>
+            </ul>
+          </li>
+
+          <li class="nav-item">
+            <a href="#" class="nav-link active">
+             <i class="nav-icon fas fa-user-friends"></i>
+              <p>
+                Clientes
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="<?php echo $URL;?>clientes" class="nav-link ">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Listado de Clientes</p>
+                </a>
+              </li>
+              <li class="nav-item">
+               
+             </li>
+            </ul>
+          </li>
+
+
           <li class="nav-item">
             <a href="<?php echo $URL;?>app/controllers/login/cerrar_sesion.php" class="nav-link" style="background-color:crimson" >
               <i class="nav-icon fas fa-door-closed"></i>

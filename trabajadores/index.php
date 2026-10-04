@@ -49,19 +49,17 @@ unset($_SESSION['icono']);
         <div class="col-md-12">
              <div class="card card-outline card-success">
                   <div class="card-header">
-                    <h3 class="card-title">Usuarios Registrados<font dir="auto" style="vertical-align: inherit;"><font dir="auto" style="vertical-align: inherit;"></font></font></h3>
+                    <h3 class="card-title">Usuarios Registrados</h3>
 
                     <div class="card-tools">
-                      <button type="button" class="btn btn-tool" data-lte-toggle="card-collapse" aria-label="Contraer tarjeta">
-                        <i data-lte-icon="expand" class="bi bi-plus-lg"></i>
-                        <i data-lte-icon="collapse" class="bi bi-dash-lg"></i>
+                      <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                        <i class="fas fa-minus"></i>
                       </button>
                     </div>
                     <!-- /.card-tools -->
                   </div>
                   <!-- /.card-header -->
-                  <div class="card-body" style="box-sizing: border-box; display: block;"><font dir="auto" style="vertical-align: inherit;"><font dir="auto" style="vertical-align: inherit;">
-                   
+                  <div class="card-body">
                        <table id="example1" class="table table-bordered table-striped">
                   <thead>
                   <tr>
@@ -87,9 +85,9 @@ unset($_SESSION['icono']);
                          <td>
                          <center>
                           <div class="btn-group">
-                            <a href="show.php?id=<?php echo $id_Trabajadores; ?>" type="button" class="btn btn-info"><font dir="auto" style="vertical-align: inherit;"><font dir="auto" style="vertical-align: inherit;"><i class="fa fa-eye" ></i>Ver</font></font></a>
-                            <a href="update.php?id=<?php echo $id_Trabajadores; ?>" type="button" class="btn btn-success"><font dir="auto" style="vertical-align: inherit;"><font dir="auto" style="vertical-align: inherit;"><i class="fa fa-pencil-alt"></i>Editar</font></font></a>
-                            <a href="delete.php?id=<?php echo $id_Trabajadores; ?>" type="button" class="btn btn-danger"><font dir="auto" style="vertical-align: inherit;"><font dir="auto" style="vertical-align: inherit;"><i class="fa fa-trash"></i>Borrar</font></font></a>
+                            <a href="show.php?id=<?php echo $id_Trabajadores; ?>" type="button" class="btn btn-info"><i class="fa fa-eye"></i> Ver</a>
+                            <a href="update.php?id=<?php echo $id_Trabajadores; ?>" type="button" class="btn btn-success"><i class="fa fa-pencil-alt"></i> Editar</a>
+                            <a href="delete.php?id=<?php echo $id_Trabajadores; ?>" type="button" class="btn btn-danger"><i class="fa fa-trash"></i> Borrar</a>
                           </div>
                          </center>
 
@@ -100,7 +98,7 @@ unset($_SESSION['icono']);
                         ?>
                      </tbody>
                   <tfoot>
-                 <tr>
+                  <tr>
                           <th>Nro</th>
                           <th>Nombres</th>
                           <th>Usuario</th>
@@ -109,8 +107,7 @@ unset($_SESSION['icono']);
                       </tr>
                   </tfoot>
                 </table>
-                <table id="example1" class="table table-bordered table-striped">
-                  </font></font></div>
+                  </div>
                   <!-- /.card-body -->
                 </div> 
         </div>
@@ -122,7 +119,7 @@ unset($_SESSION['icono']);
     <!-- /.content -->
   </div>
   <!-- /.content-wrapper -->
-   
+    
 
 <?php include('../layout/parte2.php');?>
 
@@ -161,7 +158,7 @@ $(function () {
 
         buttons: [{
             extend: 'collection',
-            Text: 'Reportes',
+            text: 'Reportes',
             orientation: 'landscape',
             buttons: [{
                 text: 'Copiar',
