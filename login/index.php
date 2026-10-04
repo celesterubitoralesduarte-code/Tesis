@@ -47,7 +47,7 @@
     <div class="card-body">
       <p class="login-box-msg">Ingrese sus Datos</p></p>
 
-      <form action="../app/controllers/login/ingreso.php" method="post">
+      <form action="../app/controllers/login/ingreso.php" method="post" autocomplete="off">
         <div class="input-group mb-3">
           <input type="text" class="form-control" name="usuarioTrabajador" placeholder="Usuario">
           <div class="input-group-append">
@@ -57,12 +57,13 @@
           </div>
         </div>
         <div class="input-group mb-3">
-          <input type="password" class="form-control" name="pasworTrabaj" placeholder="Contraseña" >
-          <div class="input-group-append">
-            <div class="input-group-text">
-              <span class="fas fa-lock"></span>
-            </div>
-          </div>
+   <input type="password" id="input_password" name="pasworTrabaj" class="form-control" placeholder="Contraseña" autocomplete="off" required>
+    <div class="input-group-append">
+        <button class="btn btn-outline-secondary" type="button" id="toggle_password" style="border-color: #ced4da;">
+          <i class="fas fa-eye-slash" id="icono_ojo"></i>
+        </button>
+    </div>
+
         </div>
         <div class="row">
           </div>
@@ -90,3 +91,20 @@
 <script src="../public/templeates/AdminLTE-3.2.0/dist/js/adminlte.min.js"></script>
 </body>
 </html>
+
+<script>
+ $('#toggle_password').click(function () {
+    var tipo_campo = $('#input_password').attr('type');
+    
+    if (tipo_campo === 'password') {
+        // Se muestra el texto y cambiamos al ojo normal para indicar "visible"
+        $('#input_password').attr('type', 'text');
+        $('#icono_ojo').removeClass('fa-eye-slash').addClass('fa-eye');
+    } else {
+        // Se oculta el texto con puntos y volvemos al ojo tachado
+        $('#input_password').attr('type', 'password');
+        $('#icono_ojo').removeClass('fa-eye').addClass('fa-eye-slash');
+    }
+});
+
+</script>
