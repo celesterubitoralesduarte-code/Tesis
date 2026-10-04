@@ -95,20 +95,18 @@ $nuevo_codigo = "P-" . ceros($siguiente_numero);
             <input type="number" step="any" name="stockMinimo" value="<?php echo (float)$stockMinimo; ?>" class="form-control" required>
         </div>
     </div>
-    <div class="col-md-2">
-        <div class="form-group">
-            <label for="">Precio Compra:</label>
-            <!-- Multiplicamos por 1000 para transformar el 72.00 en 72.000 mil Guaraníes -->
-            <input type="text" name="precioCompra" value="<?php echo number_format($precioCompra * 1000, 0, '', '.'); ?>" class="form-control" required>
-        </div>
+   <div class="col-md-2">
+    <div class="form-group">
+        <label for="">Precio Compra:</label>
+        <input type="text" name="precioCompra" value="<?php echo number_format($precioCompra, 0, '', '.'); ?>" class="form-control formato-precio" required>
     </div>
+</div>
     <div class="col-md-2">
-        <div class="form-group">
-            <label for="">Precio Venta:</label>
-            <!-- Multiplicamos por 1000 para transformar el 85.00 en 85.000 mil Guaraníes -->
-            <input type="text" name="precioVenta" value="<?php echo number_format($precioVenta * 1000, 0, '', '.'); ?>" class="form-control" required>
-        </div>
+    <div class="form-group">
+        <label for="">Precio Venta:</label>
+        <input type="text" name="precioVenta" value="<?php echo number_format($precioVenta, 0, '', '.'); ?>" class="form-control formato-precio" required>
     </div>
+</div>
     <div class="col-md-2">
         <div class="form-group">
             <label for="">Fecha Ingreso:</label>

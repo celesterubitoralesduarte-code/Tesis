@@ -1,71 +1,65 @@
 <?php
 include('../../config.php');
 
+// Capturar parámetros enviados por AJAX ($.get)
+$idProductos               = $_GET['idProductos'];
+$idProveedores             = $_GET['idProveedores'];
+$nro_compra                 = $_GET['nro_compra'];
+$fecha_compra              = $_GET['fecha_compra'];
+$comprobante               = $_GET['comprobante'];
+$idTrabajadores            = $_GET['idTrabajadores'];
+$precio_compra_controlador = $_GET['precio_compra_controlador']; 
+$cantidad_compra           = $_GET['cantidad_compra'];
+$stock_total               = $_GET['stock_total'];
+
+$fyh_creacion = date('Y-m-d H:i:s');
+
+// Verificar sesión antes de iniciarla
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    die("Acceso no permitido");
+$pdo->beginTransaction();
+// 1. Insertar la compra
+$sentencia = $pdo->prepare("INSERT INTO tb_compras
+    (idProductos, idProveedores, nro_compra, fecha_compra, comprobante, idTrabajadores, precio_compra, cantidad, fyh_creacion)
+    VALUES 
+    (:idProductos, :idProveedores, :nro_compra, :fecha_compra, :comprobante, :idTrabajadores, :precio_compra, :cantidad_compra, :fyh_creacion)");
+
+$sentencia->bindParam('idProductos', $idProductos);
+$sentencia->bindParam('idProveedores', $idProveedores);
+$sentencia->bindParam('nro_compra', $nro_compra);
+$sentencia->bindParam('fecha_compra', $fecha_compra);
+$sentencia->bindParam('comprobante', $comprobante);
+$sentencia->bindParam('idTrabajadores', $idTrabajadores);
+$sentencia->bindParam('precio_compra', $precio_compra_controlador);
+$sentencia->bindParam('cantidad_compra', $cantidad_compra);
+$sentencia->bindParam('fyh_creacion', $fyh_creacion);
+
+if($sentencia->execute()){
+    // 2. Actualizar el stock en la tabla de productos
+    $sentencia_stock = $pdo->prepare("UPDATE productos SET stockProductos = :stockProductos WHERE idProductos = :idProductos");
+    $sentencia_stock->bindParam('stockProductos', $stock_total);
+    $sentencia_stock->bindParam('idProductos', $idProductos);
+    $sentencia_stock->execute();
+
+    $pdo->commit();
+
+    $_SESSION['mensaje'] = "Se registro la compra de la manera correcta";
+    $_SESSION['icono'] = "success";
+    ?>
+    <script>
+        window.location.href = "<?php echo $URL; ?>/compras/";
+    </script>
+    <?php
+}else{
+    $pdo->rollBack();
+
+    $_SESSION['mensaje'] = "Error no se pudo registrar en la base de datos";
+    $_SESSION['icono'] = "error";
+    ?>
+    <script>
+        window.location.href = "<?php echo $URL; ?>/compras/create.php";
+    </script>
+    <?php
 }
-
-// Capturar o definir la fecha/hora de creación
-if (!isset($fechaHora) || empty($fechaHora)) {
-    $fechaHora = date('Y-m-d H:i:s');
-}
-
-// Captura y saneamiento de datos desde el formulario
-$codigo = !empty($_POST['codigo']) ? $_POST['codigo'] : null;
-$nomProductos = !empty($_POST['nomProductos']) ? $_POST['nomProductos'] : null;
-$idTrabajadores = !empty($_POST['idTrabajadores']) ? $_POST['idTrabajadores'] : null;
-
-// Saneamiento de Stocks (remueve separadores si los hay)
-$stockProductos = isset($_POST['stockProductos']) ? str_replace('.', '', $_POST['stockProductos']) : 0;
-$stockMinimo = isset($_POST['stockMinimo']) ? str_replace('.', '', $_POST['stockMinimo']) : 0;
-
-// SANEAMIENTO DE PRECIOS:
-// Remueve puntos de miles y cambia comas decimales por puntos para evitar el truncamiento de MySQL
-$precioCompra = $_POST['precioCompra'] ?? 0;
-$precioCompra = str_replace('.', '', $precioCompra); // "70.000" pasa a "70000"
-$precioCompra = str_replace(',', '.', $precioCompra); // "70,50" pasa a "70.50"
-
-$precioVenta = $_POST['precioVenta'] ?? 0;
-$precioVenta = str_replace('.', '', $precioVenta);  // "85.000" pasa a "85000"
-$precioVenta = str_replace(',', '.', $precioVenta);  // "85,50" pasa a "85.50"
-
-$fecha_ingreso = !empty($_POST['fecha_ingreso']) ? $_POST['fecha_ingreso'] : date('Y-m-d H:i:s');
-$unidadMedida = $_POST['unidadMedida'] ?? null;
-
-try {
-    $sentencia = $pdo->prepare("INSERT INTO productos
-        (idTrabajadores, codigo, nomProductos, stockProductos, stockMinimo, precioCompra, precioVenta, fecha_ingreso, unidadMedida, fyh_creacion)
-        VALUES
-        (:idTrabajadores, :codigo, :nomProductos, :stockProductos, :stockMinimo, :precioCompra, :precioVenta, :fecha_ingreso, :unidadMedida, :fyh_creacion)
-    ");
-
-    $sentencia->bindParam(':idTrabajadores', $idTrabajadores, $idTrabajadores === null ? PDO::PARAM_NULL : PDO::PARAM_INT);
-    $sentencia->bindParam(':codigo', $codigo);
-    $sentencia->bindParam(':nomProductos', $nomProductos);
-    $sentencia->bindParam(':stockProductos', $stockProductos);
-    $sentencia->bindParam(':stockMinimo', $stockMinimo);
-    $sentencia->bindParam(':precioCompra', $precioCompra);
-    $sentencia->bindParam(':precioVenta', $precioVenta);
-    $sentencia->bindParam(':fecha_ingreso', $fecha_ingreso);
-    $sentencia->bindParam(':unidadMedida', $unidadMedida);
-    $sentencia->bindParam(':fyh_creacion', $fechaHora);
-
-    if ($sentencia->execute()) {
-        $_SESSION['mensaje'] = "Se registró el producto correctamente";
-        $_SESSION['icono'] = "success";
-        header('Location: ' . $URL . '/productos/index.php');
-        exit();
-    } else {
-        $_SESSION['mensaje'] = "No se pudo registrar el producto";
-        $_SESSION['icono'] = "error";
-        header('Location: ' . $URL . '/productos/create.php');
-        exit();
-    }
-} catch (Exception $e) {
-    die("Error al registrar el producto: " . $e->getMessage());
-}
-?>

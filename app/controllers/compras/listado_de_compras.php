@@ -30,7 +30,8 @@ $sql_compras = "SELECT
 FROM tb_compras as co 
 INNER JOIN productos as pro ON co.idProductos = pro.idProductos
 INNER JOIN trabajadores as t ON co.idTrabajadores = t.idTrabajadores
-INNER JOIN proveedores as prov ON co.idProveedores = prov.idProveedores";
+INNER JOIN proveedores as prov ON co.idProveedores = prov.idProveedores
+ORDER BY co.id_compra ASC";
 
 $squery_compras = $pdo->prepare($sql_compras);
 $squery_compras->execute();

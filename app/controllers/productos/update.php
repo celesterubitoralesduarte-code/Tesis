@@ -20,18 +20,13 @@ $codigo = !empty($_POST['codigo']) ? $_POST['codigo'] : null;
 $nomProductos = !empty($_POST['nomProductos']) ? $_POST['nomProductos'] : null;
 $idTrabajadores = !empty($_POST['idTrabajadores']) ? $_POST['idTrabajadores'] : null;
 
-// 2. Limpieza de Stocks: solo se cambia la coma decimal por punto y se convierte a float.
-// Si viene como entero puro (ej: 10, 59, 10000, 59000), se guarda tal cual sin eliminar caracteres.
+// 2. Limpieza de Stocks
 $stockProductos = (float)str_replace(',', '.', $_POST['stockProductos'] ?? 0);
 $stockMinimo    = (float)str_replace(',', '.', $_POST['stockMinimo'] ?? 0);
 
-// 3. Limpieza de Precios: Se eliminan puntos y comas de formato visual
-$precioCompra_Limpio = (float)preg_replace('/[^0-9]/', '', $_POST['precioCompra'] ?? 0);
-$precioVenta_Limpio  = (float)preg_replace('/[^0-9]/', '', $_POST['precioVenta'] ?? 0);
-
-// NOTA: Se divide entre 1000 para mantener consistencia si en la base de datos se almacena como float/decimal (ej: 72.00)
-$precioCompra = $precioCompra_Limpio / 1000;
-$precioVenta  = $precioVenta_Limpio / 1000;
+// 3. Limpieza de Precios: Se eliminan puntos para guardar el entero exacto en Guaraníes
+$precioCompra = (int)preg_replace('/[^0-9]/', '', $_POST['precioCompra'] ?? 0);
+$precioVenta  = (int)preg_replace('/[^0-9]/', '', $_POST['precioVenta'] ?? 0);
 
 // 4. Formatear la fecha para que guarde fecha y hora completas
 $fecha_ingreso_raw = $_POST['fecha_ingreso'] ?? date('Y-m-d');

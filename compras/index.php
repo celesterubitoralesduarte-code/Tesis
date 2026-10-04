@@ -111,7 +111,7 @@ unset($_SESSION['icono']);
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="">Stock</label>
-                            <input type="text" value="<?php echo (int)$compras_dato['stock']; ?>" class="form-control" disabled>
+                           <input type="text" value="<?php echo formatearStock($compras_dato['stock'], $compras_dato['unidad_medida']); ?>" class="form-control" disabled>
                         </div>
                     </div>
                 </div>
@@ -119,38 +119,42 @@ unset($_SESSION['icono']);
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="">Stock Mínimo</label>
-                            <input type="text" value="<?php echo (int)$compras_dato['stock_minimo']; ?>" class="form-control" disabled>
+                           <input type="text" value="<?php echo formatearStock($compras_dato['stock_minimo'], $compras_dato['unidad_medida']); ?>" class="form-control" disabled>
                         </div>
                     </div>
-                   <div class="col-md-4">
+                 <div class="col-md-4">
     <div class="form-group">
         <label for="">Precio Compra</label>
-        <input type="text" value="<?php echo "Gs. " . number_format($compras_dato['precio_compra_producto'] * 1000, 0, ',', '.'); ?>" class="form-control" disabled>
+        <input type="text" value="<?php echo "Gs. " . number_format($compras_dato['precio_compra_producto'], 0, ',', '.'); ?>" class="form-control formato-precio" disabled>
     </div>
 </div>
 <div class="col-md-4">
     <div class="form-group">
         <label for="">Precio Venta</label>
-        <input type="text" value="<?php echo "Gs. " . number_format($compras_dato['precio_venta'] * 1000, 0, ',', '.'); ?>" class="form-control" disabled>
+        <input type="text" value="<?php echo "Gs. " . number_format($compras_dato['precio_venta'], 0, ',', '.'); ?>" class="form-control formato-precio" disabled>
     </div>
 </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="">Unidad de Medida</label>
-                            <input type="text" value="<?php echo $compras_dato['unidad_medida']; ?>" class="form-control" disabled>
-                        </div>                                                  
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="">Fecha Ingreso</label>
-                            <?php 
-                                $fecha_ingreso = date('Y-m-d', strtotime($compras_dato['fecha_ingreso'])); 
-                            ?>
-                            <input type="text" value="<?php echo $fecha_ingreso; ?>" class="form-control" disabled>
-                        </div>                                                    
-                    </div>  
+                  <div class="col-md-4">
+    <div class="form-group">
+        <label for="">Unidad de Medida</label>
+        <!-- Se deja igual porque es solo el nombre de la unidad -->
+        <input type="text" value="<?php echo $compras_dato['unidad_medida']; ?>" class="form-control" disabled>
+    </div>                                                 
+</div>
+<div class="col-md-4">
+    <div class="form-group">
+        <label for="">Fecha Ingreso</label>
+        <?php 
+            // Formateamos la fecha a dd/mm/aaaa
+            $fecha_ingreso = !empty($compras_dato['fecha_ingreso']) 
+                ? date('d/m/Y', strtotime($compras_dato['fecha_ingreso'])) 
+                : ''; 
+        ?>
+        <input type="text" value="<?php echo $fecha_ingreso; ?>" class="form-control" disabled>
+    </div>                                                     
+</div>
                      <div class="col-md-4">
                           <div class="form-group">
                             <label for="">Usuario</label>
@@ -163,10 +167,18 @@ unset($_SESSION['icono']);
     </div>
 </div>
 <!--Modal-->
-                            </td>
-                            <td><?php echo $compras_dato['fecha_compra']; ?></td>
+ </td>
                             <td>
-                                 <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#modal-proveedor<?php echo $id_compra; ?>">
+                                <?php 
+                                    echo !empty($compras_dato['fecha_compra']) 
+                                        ? date('d/m/Y', strtotime($compras_dato['fecha_compra'])) 
+                                        : ''; 
+                                ?>
+                            </td>
+
+                            <!-- Columna del Proveedor y su Modal -->
+                            <td>
+                                <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#modal-proveedor<?php echo $id_compra; ?>">
                                     <?php echo $compras_dato['nombre_proveedor']; ?>
                                 </button>
                                
@@ -235,7 +247,7 @@ unset($_SESSION['icono']);
                             <td><?php echo $compras_dato['comprobante']; ?></td>
                             <td><?php echo $compras_dato['nombre_usuario']; ?></td>
                             <td><?php echo number_format($compras_dato['precio_compra_producto'], 0, ',', '.'); ?></td>
-                            <td><?php echo $compras_dato['cantidad']; ?></td>
+                        <td><?php echo formatearStock($compras_dato['cantidad'], $compras_dato['unidad_medida']); ?></td>
                             <td>
                                 <center>
                                   <div class="btn-group">
@@ -270,6 +282,7 @@ unset($_SESSION['icono']);
 <script>
 $(function () {
     $("#example1").DataTable({
+        "order": [[ 0, "asc" ]],
         "pageLength": 5,
         "language": {
             "emptyTable": "No hay información",

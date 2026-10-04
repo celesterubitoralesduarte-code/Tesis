@@ -33,5 +33,24 @@
 <script src="<?php echo $URL; ?>public/templeates/AdminLTE-3.2.0/plugins/datatables-buttons/js/buttons.print.min.js"></script>
 <script src="<?php echo $URL; ?>public/templeates/AdminLTE-3.2.0/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
 
+<!-- SCRIPT DE FORMATO DE MILES EN TIEMPO REAL -->
+<script>
+function formatearMiles(input) {
+    let valor = input.value.replace(/\D/g, ""); // Remueve cualquier caracter que no sea número
+    if (valor !== "") {
+        input.value = new Intl.NumberFormat('de-DE').format(valor); // Formato con puntos: 10.000.000
+    } else {
+        input.value = "";
+    }
+}
+
+$(document).ready(function () {
+    // Escucha automáticamente a cualquier input con la clase 'formato-precio'
+    $(document).on('input', '.formato-precio', function () {
+        formatearMiles(this);
+    });
+});
+</script>
+
 </body>
 </html>

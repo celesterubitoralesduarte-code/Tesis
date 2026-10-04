@@ -33,4 +33,29 @@ $fechaHora = date('Y-m-d H:i:s');
   </script>
 <?php
  }
+ function formatearStock($cantidad, $unidad_medida = '') {
+    // Convertimos el valor a número float
+    $num = (float)$cantidad;
+    $u = strtolower(trim($unidad_medida));
+    
+    // Si el número no tiene decimales reales (ej: 50.00 o 11.00), lo dejamos como entero sin decimales
+    if ($num == floor($num)) {
+        $valor = number_format($num, 0, ',', '.');
+    } else {
+        // Si tiene decimales reales (ej: 1.500 kg), mostramos hasta 3 decimales limpiando ceros a la derecha
+        $valor = number_format($num, 3, ',', '.');
+        $valor = rtrim(rtrim($valor, '0'), ',');
+    }
+
+    // Identificamos la unidad para abreviarla
+    if (strpos($u, 'kilo') !== false || strpos($u, 'kg') !== false) {
+        return $valor . ' Kg';
+    } elseif (strpos($u, 'gramo') !== false || strpos($u, 'g') !== false) {
+        return $valor . ' g';
+    } elseif (strpos($u, 'unidad') !== false || strpos($u, 'und') !== false) {
+        return $valor . ' Und';
+    } else {
+        return $valor . ' ' . trim($unidad_medida);
+    }
+}
   ?>

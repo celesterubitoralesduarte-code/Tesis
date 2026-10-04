@@ -54,93 +54,85 @@ unset($_SESSION['icono']);
                   </div>
                   <!-- /.card-header -->
                   <div class="card-body" style="box-sizing: border-box; display: block;">                    
-                       <table id="example1" class="table table-bordered table-striped">
-                      <thead>
-                     <tr>
-                         <th><center>Nro</center></th>
-                         <th><center>Código</center></th>                        
-                         <th><center>Nombre</center></th>
-                         <th><center>Stock</center></th>
-                         <th><center>Stock Minimo</center></th>
-                         <th><center>Precio Compra</center></th>
-                         <th><center>Precio Venta</center></th>
-                         <th><center>Fecha Ingreso</center></th>
-                         <th><center>Usuario</center></th>
-                         <th><center>Unidad de Medida</center></th>
-                         <th><center>Acciones</center></th>
-                      </tr>
-                     </thead>
-                     <tbody>
-                        <?php  
-                        $contador = 0;
-                        foreach ($productos_datos as $productos_datos){ 
-                            $idProductos = $productos_datos['idProductos'];
+                 <table id="example1" class="table table-bordered table-striped table-sm">
+    <thead>
+        <tr>
+            <th><center>Nro</center></th>
+            <th><center>Código</center></th>                        
+            <th><center>Nombre</center></th>
+            <th><center>Stock</center></th>
+            <th><center>Stock<br>Mínimo</center></th>
+            <th><center>Precio<br>Compra</center></th>
+            <th><center>Precio<br>Venta</center></th>
+            <th><center>Fecha<br>Ingreso</center></th>
+            <th><center>Usuario</center></th>
+            <th><center>Unidad de<br>Medida</center></th>
+            <th><center>Acciones</center></th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php  
+        $contador = 0;
+        foreach ($productos_datos as $productos_dato) { 
+            $idProductos = $productos_dato['idProductos'];
+            $precioCompra = (float)$productos_dato['precioCompra'];
+            $precioVenta = (float)$productos_dato['precioVenta'];
 
-                            $precioCompra = $productos_datos['precioCompra'];
-                              if ($precioCompra > 0 && $precioCompra < 1000) {
-                                $precioCompra = $precioCompra * 1000;
-                            }
-                            $precioVenta = $productos_datos['precioVenta'];
-                             if ($precioVenta > 0 && $precioVenta < 1000) {
-                                $precioVenta = $precioVenta * 1000;
-                            }
+            $stock_actual = (float)$productos_dato['stockProductos'];
+            $stock_minimo = (float)$productos_dato['stockMinimo'];
 
-                        ?>
-                          
-                         <tr>
-                            <td><center><?php echo $contador = $contador + 1; ?></center></td>
-                            <td><?php echo $productos_datos['codigo'];?></td>
-                            <td><?php echo $productos_datos['nomProductos'];?></td>
-                            
-                          <!-- Columna Stock -->
-                        <td>
-                          <?php 
-                             if ($productos_datos['unidadMedida'] == 'Unidades (Und)') {
-                                 echo number_format((float)$productos_datos['stockProductos'], 0, ',', '');
-                              } else {
-                             // Muestra enteros sin decimales sobrantes (.000) o decimales reales si existen
-                                echo number_format((float)$productos_datos['stockProductos'], (floor($productos_datos['stockProductos']) == $productos_datos['stockProductos'] ? 0 : 3), ',', '');
-                              }
-                           ?>
-                      </td>
+            $unidad = ($productos_dato['unidadMedida'] == 'Unidades (Und)') ? 'Und' : 'Kg';
 
-                         <!-- Columna Stock Mínimo -->
-                         <td>
-                             <?php 
-                               if ($productos_datos['unidadMedida'] == 'Unidades (Und)') {
-                                  echo number_format((float)$productos_datos['stockMinimo'], 0, ',', '');
-                                 } else {
-                                 echo number_format((float)$productos_datos['stockMinimo'], (floor($productos_datos['stockMinimo']) == $productos_datos['stockMinimo'] ? 0 : 3), ',', '');
-                                }
-                              ?>
-                         </td>
+            $estilo_stock = ($stock_actual <= $stock_minimo) 
+                ? 'style="background-color: #ee868b; white-space: nowrap;"' 
+                : 'style="white-space: nowrap;"';
+        ?>
+            <tr>
+                <td><center><?php echo $contador = $contador + 1; ?></center></td>
+                <td><?php echo $productos_dato['codigo']; ?></td>
+                <td><?php echo $productos_dato['nomProductos']; ?></td>
+                
+                <td <?php echo $estilo_stock; ?>>
+                    <?php echo $stock_actual . ' ' . $unidad; ?>
+                </td>
 
-                            <!-- Precios en Guaraníes Paraguayos (Gs. 72.000, Gs. 85.000, etc.) -->
-                            <td><?php echo "Gs. " . number_format($precioCompra, 0, ',', '.'); ?></td>
-                            <td><?php echo "Gs. " . number_format($precioVenta, 0, ',', '.'); ?></td>
-                            
-                            <!-- Fecha de Ingreso sin Hora -->
-                            <td><?php echo date('Y-m-d', strtotime($productos_datos['fecha_ingreso'])); ?></td>
-                            
-                            <td><?php echo $productos_datos['usuarioTrabajador'];?></td>
-                            <td><?php echo $productos_datos['unidadMedida'];?></td>
-                            <td>
-                                 <center>
-                          <div class="btn-group">
-                            <a href="show.php?id=<?php echo $idProductos?? ''; ?>" type="button" class="btn btn-info btn-sm"><font dir="auto" style="vertical-align: inherit;"><font dir="auto" style="vertical-align: inherit;"><i class="fa fa-eye" ></i>Ver</font></font></a>
-                            <a href="update.php?id=<?php echo $idProductos?? ''; ?>" type="button" class="btn btn-success btn-sm"><font dir="auto" style="vertical-align: inherit;"><font dir="auto" style="vertical-align: inherit;"><i class="fa fa-pencil-alt"></i>Editar</font></font></a>
-                            <a href="delete.php?id=<?php echo $idProductos?? ''; ?>" type="button" class="btn btn-danger btn-sm"><font dir="auto" style="vertical-align: inherit;"><font dir="auto" style="vertical-align: inherit;"><i class="fa fa-trash"></i>Borrar</font></font></a>
-                          </div>
-                         </center>
-                            </td>
-                         </tr>
+                <td style="white-space: nowrap;">
+                    <?php echo $stock_minimo . ' ' . $unidad; ?>
+                </td>
 
-                       <?php
-                        }
-                        ?>
-                     </tbody>
-                 
-                      </table>
+                <td style="white-space: nowrap;">
+                    <?php echo "Gs. " . number_format($precioCompra, 0, ',', '.'); ?>
+                </td>
+                <td style="white-space: nowrap;">
+                    <?php echo "Gs. " . number_format($precioVenta, 0, ',', '.'); ?>
+                </td>
+                
+                <td style="white-space: nowrap;">
+                   <?php 
+        echo !empty($productos_dato['fecha_ingreso']) 
+            ? date('d/m/Y', strtotime($productos_dato['fecha_ingreso'])) 
+            : ''; 
+    ?>
+                </td>
+                
+                <td><?php echo $productos_dato['usuarioTrabajador'] ?? $productos_dato['idTrabajadores']; ?></td>
+                <td><?php echo $productos_dato['unidadMedida']; ?></td>
+                
+                <td style="white-space: nowrap;">
+                    <center>
+                        <div class="btn-group">
+                            <a href="show.php?id=<?php echo $idProductos; ?>" class="btn btn-info btn-sm"><i class="fa fa-eye"></i> Ver</a>
+                            <a href="update.php?id=<?php echo $idProductos; ?>" class="btn btn-success btn-sm"><i class="fa fa-pencil-alt"></i> Editar</a>
+                            <a href="delete.php?id=<?php echo $idProductos; ?>" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i> Borrar</a>
+                        </div>
+                    </center>
+                </td>
+            </tr>
+        <?php
+        }
+        ?>
+    </tbody>
+</table>
                   </div>
                   <!-- /.card-body -->
                 </div> 
