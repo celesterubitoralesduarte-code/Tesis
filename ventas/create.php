@@ -11,10 +11,9 @@ function ceros(int $numero){
     return str_pad($numero, 5, "0", STR_PAD_LEFT);
 }
 
-// Extraemos el número de código más alto registrado actualmente
 $sql_max_codigo = "SELECT MAX(CAST(SUBSTRING(codigo, 3) AS UNSIGNED)) AS max_codigo 
-                   FROM productos 
-                   WHERE codigo LIKE 'P-'";
+                    FROM productos 
+                    WHERE codigo LIKE 'P-%'";
 $query_max_codigo = $pdo->prepare($sql_max_codigo);
 $query_max_codigo->execute();
 $row_max_codigo = $query_max_codigo->fetch(PDO::FETCH_ASSOC);
@@ -33,7 +32,7 @@ $nro_venta_actual = $contador_de_ventas + 1;
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-12">
-            <h1 class="m-0">Ventas</h1>
+            <h1 class="m-0">Ventas - Nueva Factura</h1>
           </div>
         </div>
       </div>
@@ -43,371 +42,446 @@ $nro_venta_actual = $contador_de_ventas + 1;
     <div class="content">
       <div class="container-fluid">
         
-        <!-- FILA SUPERIOR: CARRITO (ANCHO COMPLETO - col-md-12) -->
-        <div class="row">
-          <div class="col-md-12">
-              <div class="card card-outline card-primary">
-                  <div class="card-header">
-                     <h3 class="card-title"><i class="fa fa-shopping-bag"></i> Venta Nro
-                         <input type="text" id="nro_venta" style="text-align: center" value="<?php echo $nro_venta_actual; ?>" disabled>
-                     </h3>
-                      <div class="card-tools">
-                          <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                              <i class="fas fa-minus"></i>
-                          </button>
-                      </div>    
-                  </div> 
+  <div class="row">
+        
+       <!-- ================= COLUMNA IZQUIERDA: BUSCAR PRODUCTOS ================= -->
+<div class="col-md-6">
+    <div class="card card-outline card-primary">
+        <div class="card-header">
+            <h3 class="card-title"><i class="fa fa-search"></i> 1. Buscar Productos</h3>
+        </div>
+        <div class="card-body">
+            
+            <!-- CONTENEDOR CON SCROLL VERTICAL -->
+            <div style="max-height: 420px; overflow-y: auto; overflow-x: hidden;" class="border rounded p-1 mb-2">
+                <table id="example1" class="table table-bordered table-striped table-sm mb-0" style="width:100%; cursor: pointer;">
+                    <thead style="position: sticky; top: 0; background: white; z-index: 1;">
+                        <tr>
+                            <th><center>Código</center></th>
+                            <th><center>Nombre</center></th>
+                            <th><center>Stock</center></th>
+                            <th><center>Precio Venta</center></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <?php  
+                    if (isset($productos_datos) && is_array($productos_datos)) {
+                        foreach ($productos_datos as $producto){ 
+                            $idProductos = $producto['idProductos']; 
+                            $stockProductos = $producto['stockProductos'];
+                            $stockMinimo = $producto['stockMinimo'];
+                            
+                            $precioVenta = $producto['precioVenta'];
+                            if ($precioVenta > 0 && $precioVenta < 1000) {
+                                $precioVenta = $precioVenta * 1000;
+                            }
+
+                           $clase_alerta = "";
+if (floatval($stockProductos) <= floatval($stockMinimo)) {
+    $clase_alerta = "table-danger";
+}
+                    ?>
+                        <tr class="fila-producto <?php echo $clase_alerta; ?>" 
+                            data-id="<?php echo $producto['idProductos']; ?>"
+                            data-codigo="<?php echo $producto['codigo'];?>"
+                            data-nombre="<?php echo $producto['nomProductos'];?>"
+                            data-stock="<?php echo $stockProductos;?>"
+                            data-precioventa="<?php echo $precioVenta;?>"
+                            data-precioventa-formateado="<?php echo number_format($precioVenta, 0, ',', '.');?>"
+                            data-unidad="<?php echo $producto['unidadMedida'];?>">
+                            <td><?php echo $producto['codigo'];?></td>
+                            <td><?php echo $producto['nomProductos'];?></td>
+                            <td><?php echo function_exists('formatearStock') ? formatearStock($stockProductos, $producto['unidadMedida']) : $stockProductos; ?></td>
+                            <td><?php echo "Gs. " . number_format($precioVenta, 0, ',', '.'); ?></td>
+                        </tr>
+                    <?php
+                        }
+                    }
+                    ?>
+                    </tbody>
+                </table>
+            </div>
+
+            <hr class="my-2">
+            
+            <!-- CAMPOS HORIZONTALES ABAJO -->
+            <div class="bg-light p-3 border rounded">
+                <input type="text" id="idProductos" hidden>
+                
+                <div class="row">
+                    <!-- Producto Seleccionado -->
+                    <div class="col-md-4">
+                        <div class="form-group mb-2">
+                            <label class="small mb-1">Producto:</label>
+                            <input type="text" id="producto" class="form-control form-control-sm" disabled placeholder="Seleccione de la tabla">
+                        </div>
+                    </div>
+                    <!-- Cantidad / Peso -->
+                    <div class="col-md-3">
+                        <div class="form-group mb-2">
+                            <label class="small mb-1">Cant/Peso:</label>
+                            <input type="number" step="0.001" id="cantidad" class="form-control form-control-sm" value="">
+                        </div>
+                    </div>
+                    <!-- Precio Unitario -->
+                    <div class="col-md-3">
+                        <div class="form-group mb-2">
+                            <label class="small mb-1">P. Unit:</label>
+                            <input type="text" id="precioVenta" class="form-control form-control-sm" disabled>
+                        </div>
+                    </div>
+                    <!-- Botón Añadir -->
+                    <div class="col-md-2 d-flex align-items-end">
+                        <div class="form-group mb-2 w-100">
+                            <button type="button" id="btn_registrar_carrito" class="btn btn-success btn-sm btn-block" title="Añadir al Carrito">
+                                <i class="fa fa-cart-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+        <!-- ================= COLUMNA DERECHA: CLIENTE + CARRITO EN UN SOLO BLOQUE ================= -->
+          <div class="col-md-6">
+              
+              <div class="card card-outline card-primary mb-3">
+                  <div class="card-header py-2 bg-light">
+                      <h3 class="card-title" style="font-size: 1.1rem; font-weight: bold;">
+                          <i class="fa fa-cash-register"></i> Registrar Venta Nro: 
+                          <input type="text" id="nro_venta" style="text-align: center; width: 45px; border:none; background:transparent; font-weight: bold;" value="<?php echo $nro_venta_actual; ?>" disabled>
+                      </h3>
+                  </div>
                   
                   <div class="card-body">
-                      <b>Carrito </b>
-                      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-buscar_producto">
-                          <i class="fa fa-search"></i> Buscar Producto
-                      </button>  
-                           
-                      <!-- Modal Búsqueda del Producto -->
-                      <div class="modal fade" id="modal-buscar_producto">
-                          <div class="modal-dialog modal-xl">
-                              <div class="modal-content">
-                                  <div class="modal-header" style="background-color: #1d36b6; color: white">
-                                      <h4 class="modal-title">Búsqueda del Producto</h4>
-                                      <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: white">
-                                          <span aria-hidden="true">&times;</span>
-                                      </button>
+                      
+                      <!-- 1. DATOS DEL CLIENTE INTEGRADOS -->
+                      <div class="border rounded p-2 mb-3 bg-white">
+                          <div class="d-flex justify-content-between align-items-center mb-2">
+                              <span class="font-weight-bold text-secondary" style="font-size: 0.9rem;">
+                                  <i class="fa fa-user-check"></i> Datos del cliente
+                              </span>
+                              <button type="button" class="btn btn-outline-primary btn-xs" data-toggle="modal" data-target="#modal-buscar_cliente" title="Buscar Cliente">
+                                  <i class="fa fa-search"></i> Buscar / Cambiar Cliente
+                              </button>
+                          </div>
+                          
+                          <div class="row">
+                              <div class="col-md-6">
+                                  <input type="text" id="id_cliente" hidden>
+                                  <div class="form-group mb-0">
+                                      <label class="small text-muted mb-0">Cliente</label>
+                                      <input type="text" id="nombre_cliente" class="form-control form-control-sm bg-light" value="Consumidor Final" disabled>
                                   </div>
-                                  <div class="modal-body">
-                                      <div class="card-body" style="box-sizing: border-box; display: block;">                    
-                                          <table id="example1" class="table table-bordered table-striped">
-                                            <thead>
-                                            <tr>
-                                                <th><center>Nro</center></th>
-                                                <th><center>Seleccionar</center></th>
-                                                <th><center>Código</center></th>                        
-                                                <th><center>Nombre</center></th>
-                                                <th><center>Stock</center></th>
-                                                <th><center>Stock Mínimo</center></th>
-                                                <th><center>Precio Compra</center></th>
-                                                <th><center>Precio Venta</center></th>
-                                                <th><center>Fecha Ingreso</center></th>
-                                                <th><center>Usuario</center></th>
-                                                <th><center>Unidad de Medida</center></th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                              <?php  
-                                              $contador = 0;
-                                              if (isset($productos_datos) && is_array($productos_datos)) {
-                                                  foreach ($productos_datos as $producto){ 
-                                                      $idProductos = $producto['idProductos']; 
-                                                      $precioCompra = $producto['precioCompra'];
-                                                      if ($precioCompra > 0 && $precioCompra < 1000) {
-                                                          $precioCompra = $precioCompra * 1000;
-                                                      }
-
-                                                      $precioVenta = $producto['precioVenta'];
-                                                      if ($precioVenta > 0 && $precioVenta < 1000) {
-                                                          $precioVenta = $precioVenta * 1000;
-                                                      }
-                                              ?>
-                                                <tr>
-                                                  <td><center><?php echo ++$contador; ?></center></td>
-                                                  <td>
-                                                   <button type="button" class="btn btn-info btn-seleccionar" 
-                                                    data-id="<?php echo $producto['idProductos']; ?>"
-                                                    data-codigo="<?php echo $producto['codigo'];?>"
-                                                    data-nombre="<?php echo $producto['nomProductos'];?>"
-                                                    data-usuario="<?php echo $producto['usuarioTrabajador'];?>"
-                                                    data-stock="<?php echo $producto['stockProductos'];?>"
-                                                    data-stockmin="<?php echo $producto['stockMinimo'];?>"
-                                                    data-preciocompra="<?php echo $precioCompra;?>"
-                                                    data-precioventa="<?php echo $precioVenta;?>"
-                                                    data-precioventa-formateado="<?php echo number_format($precioVenta, 0, ',', '.');?>"
-                                                    data-fecha="<?php echo date('d/m/Y', strtotime($producto['fecha_ingreso']));?>"
-                                                    data-unidad="<?php echo $producto['unidadMedida'];?>">
-                                                    Seleccionar
-                                                    </button>
-                                                  </td>
-                                                  <td><?php echo $producto['codigo'];?></td>
-                                                  <td><?php echo $producto['nomProductos'];?></td>
-                                                  <td><?php echo formatearStock($producto['stockProductos'], $producto['unidadMedida']); ?></td>
-                                                  <td><?php echo formatearStock($producto['stockMinimo'], $producto['unidadMedida']); ?></td>
-                                                  <td><?php echo "Gs. " . number_format($precioCompra, 0, ',', '.'); ?></td>
-                                                  <td><?php echo "Gs. " . number_format($precioVenta, 0, ',', '.'); ?></td>
-                                                  <td><?php echo date('d/m/Y', strtotime($producto['fecha_ingreso']));?></td>
-                                                  <td><?php echo $producto['usuarioTrabajador'];?></td>
-                                                  <td><?php echo $producto['unidadMedida'];?></td>
-                                                </tr>
-                                              <?php
-                                                  }
-                                              }
-                                              ?>
-                                            </tbody>
-                                          </table>
-                                          <div class="row">
-                                              <div class="col-md-3">
-                                                  <div class="form-group">
-                                                      <input type="text" id="idProductos" hidden>
-                                                      <label for="">Producto</label>
-                                                      <input type="text" id="producto" class="form-control" disabled>
-                                                  </div>
-                                              </div>
-                                              <div class="col-md-3">
-                                                  <div class="form-group">
-                                                      <label for="">Cantidad / Peso (Kg)</label>
-                                                      <input type="number" step="0.001" id="cantidad" class="form-control">
-                                                  </div>
-                                              </div>
-                                              <div class="col-md-3">
-                                                  <div class="form-group">
-                                                      <label for="">Precio Unitario</label>
-                                                      <input type="text" id="precioVenta" class="form-control" disabled>
-                                                  </div>
-                                              </div>
-                                              <div class="col-md-3">
-                                                  <div class="form-group">
-                                                      <label for="">&nbsp;</label>
-                                                      <button type="button" id="btn_registrar_carrito" class="btn btn-primary btn-block">Registrar</button>
-                                                  </div>
-                                              </div>
-                                          </div>
-                                      </div>
+                              </div>
+                              <div class="col-md-6">
+                                  <div class="form-group mb-0">
+                                      <label class="small text-muted mb-0">RUC / CI</label>
+                                      <input type="text" id="ruc_ci_cliente" class="form-control form-control-sm bg-light" disabled>
                                   </div>
                               </div>
                           </div>
                       </div>
+
+                      <!-- 2. TABLA DEL CARRITO (PRODUCTOS SELECCIONADOS) -->
+                      <div class="form-group mb-1">
+                          <label class="small text-muted font-weight-bold">
+                              <i class="fa fa-shopping-bag"></i> Productos Seleccionados
+                          </label>
+                      </div>
                       
-                      <br><br>
-                      <!-- TABLA DEL CARRITO -->
                       <div class="table-responsive">
-                          <table class="table table-bordered table-sm table-hover table-striped">
+                          <table class="table table-bordered table-sm table-hover table-striped mb-0">
                               <thead>
                                   <tr>
-                                      <th style="background-color: #e7e7e7;text-align: center">Nro</th>
-                                      <th style="background-color: #e7e7e7;text-align: center">Nombre</th>
-                                      <th style="background-color: #e7e7e7;text-align: center">Cantidad/Peso</th>
-                                      <th style="background-color: #e7e7e7;text-align: center">Precio Unitario</th>
-                                      <th style="background-color: #e7e7e7;text-align: center">Precio SubTotal</th>
-                                      <th style="background-color: #e7e7e7;text-align: center">Acción</th>
+                                      <th style="background-color: #e7e7e7; text-align: center">Nro</th>
+                                      <th style="background-color: #e7e7e7; text-align: center">Nombre</th>
+                                      <th style="background-color: #e7e7e7; text-align: center">Cant/Peso</th>
+                                      <th style="background-color: #e7e7e7; text-align: center">P. Unit</th>
+                                      <th style="background-color: #e7e7e7; text-align: center">SubTotal</th>
+                                      <th style="background-color: #e7e7e7; text-align: center">Acción</th>
                                   </tr>
                               </thead>
                               <tbody id="tabla_carrito_body">
-                                  <!-- AJAX cargará los productos aquí -->
+                                  <!-- AJAX cargará los productos aquí automáticamente -->
                               </tbody>
                           </table>
                       </div>
-                  </div>
+                      <br>
+                     <div class="card-body py-2">
+                        <!-- Monto a Cobrar horizontal -->
+                        <div class="row align-items-center mb-2">
+                            <div class="col-md-5">
+                                <label class="font-weight-bold mb-0" style="font-size: 1.1em;">Monto a Cobrar:</label>
+                            </div>
+                            <div class="col-md-7">
+                                <input type="text" id="monto_a_cancelar" class="form-control" style="text-align: center; background-color: #ffff00; font-weight: bold; font-size: 1.4em;" value="0" readonly>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-2">
+                                    <label class="small">Total pagado</label>
+                                    <input type="text" class="form-control form-control-sm" id="total_pagado" placeholder="0" autocomplete="off">
+                                    <input type="hidden" id="monto_a_cancelar_num" value="0">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-2">
+                                    <label class="small">Cambio / Vuelto</label>
+                                    <input type="text" id="cambio" class="form-control form-control-sm text-center font-weight-bold text-success" readonly>
+                                </div>
+                                
+                                <!-- Menú desplegable visible permanentemente -->
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <label class="small text-muted"></label>
+                                    <div class="dropdown">
+                                        <button type="button" class="btn btn-secondary btn-block dropdown-toggle font-weight-bold btn-sm" data-toggle="dropdown" aria-expanded="false" style="background-color: #6c757d; border-color: #6c757d;">
+                                            <i class="fa fa-print"></i> Imprimir última venta
+                                        </button>
+                                        <div class="dropdown-menu w-100 text-center shadow">
+                                            <a class="dropdown-item py-2 font-weight-bold" href="#" id="link_imprimir_ticket" target="_blank">
+                                                <i class="fa fa-file-text-o"></i> Imprimir Ticket
+                                            </a>
+                                            <div class="dropdown-divider"></div>
+                                            <a class="dropdown-item py-2 font-weight-bold" href="#" id="link_imprimir_factura" target="_blank">
+                                                <i class="fa fa-file-pdf-o"></i> Imprimir Factura
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                       
+                       <div class="d-flex justify-content-between align-items-center mt-3">
+                            <button type="button" id="btn_cancelar_venta" class="btn btn-danger">
+                                <i class="fa fa-times"></i> Cancelar
+                            </button>     
+                            <button type="button" id="btn_guardar_venta" class="btn btn-primary">
+                                Realizar Venta
+                            </button>
+                        </div>
+                    </div>
               </div>
           </div>
         </div> <!-- /.row -->
-
-        <!-- FILA INFERIOR: DATOS DEL CLIENTE (IZQUIERDA) Y REGISTRAR VENTA (DERECHA) -->
-        <div class="row">
-          <!-- DATOS DEL CLIENTE (col-md-9) -->
-          <div class="col-md-9">
-              <div class="card card-outline card-primary">
-                  <div class="card-header">
-                      <h3 class="card-title"><i class="fa fa-user-check"></i> Datos del cliente</h3>
-                      <div class="card-tools">
-                          <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                              <i class="fas fa-minus"></i>
-                          </button>
-                      </div>
-                  </div>
-
-                  <div class="card-body">
-                      <b>Clientes </b>
-                      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-buscar_cliente">
-                          <i class="fa fa-search"></i> Buscar Cliente
-                      </button>  
-                      
-                      <!-- Modal Búsqueda del Cliente -->
-                      <div class="modal fade" id="modal-buscar_cliente">
-                          <div class="modal-dialog modal-xl">
-                              <div class="modal-content">
-                                  <div class="modal-header" style="background-color: #1d36b6; color: white">
-                                      <h4 class="modal-title">Búsqueda del cliente</h4>
-                                      <button type="button" class="btn btn-warning btn-sm ml-3" data-toggle="modal" data-target="#modal-agregar_cliente">
-                                          <i class="fa fa-user-plus"></i> Agregar nuevo cliente
-                                      </button>
-                                      <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: white">
-                                          <span aria-hidden="true">&times;</span>
-                                      </button>
-                                  </div>
-                                  <div class="modal-body">
-                                      <div class="table-responsive">    
-                                          <table id="example2" class="table table-bordered table-striped" style="width:100%">
-                                              <thead>
-                                                  <tr>
-                                                      <th><center>Nro</center></th>
-                                                      <th><center>Seleccionar</center></th>
-                                                      <th><center>Nombre del cliente</center></th>        
-                                                      <th><center>RUC/CI</center></th>
-                                                      <th><center>Celular</center></th>
-                                                      <th><center>Correo</center></th>
-                                                  </tr>
-                                              </thead>
-                                              <tbody>
-                                                  <?php  
-                                                  $contador = 0;
-                                                  if (isset($clientes_datos) && is_array($clientes_datos)) {
-                                                      foreach ($clientes_datos as $cliente){ 
-                                                          $id_cliente = $cliente['id_cliente']; 
-                                                  ?>
-                                                      <tr>
-                                                          <td><center><?php echo ++$contador; ?></center></td>
-                                                          <td>
-                                                              <button type="button" class="btn btn-info btn-sm btn-seleccionar_cliente" 
-                                                                  data-id="<?php echo $cliente['id_cliente']; ?>"
-                                                                  data-nombre_cliente="<?php echo $cliente['nombre_cliente'];?>"
-                                                                  data-ruc_ci_cliente="<?php echo $cliente['ruc_ci_cliente'];?>"
-                                                                  data-celular_cliente="<?php echo $cliente['celular_cliente'];?>"
-                                                                  data-email_cliente="<?php echo $cliente['email_cliente'];?>">
-                                                                  Seleccionar
-                                                              </button>
-                                                          </td>
-                                                          <td><?php echo $cliente['nombre_cliente'];?></td>
-                                                          <td><?php echo $cliente['ruc_ci_cliente'];?></td>
-                                                          <td><?php echo $cliente['celular_cliente'];?></td>
-                                                          <td><?php echo $cliente['email_cliente'];?></td>
-                                                      </tr>
-                                                  <?php
-                                                      }
-                                                  }
-                                                  ?>
-                                              </tbody>
-                                          </table>
-                                      </div>
-                                  </div>
-                              </div>
-                          </div>
-                      </div>
-
-                      <div class="row mt-3">
-                          <div class="col-md-3">
-                              <div class="form-group">
-                                  <input type="text" id="id_cliente" hidden>
-                                  <label for="">Cliente</label>
-                                  <input type="text" id="nombre_cliente" class="form-control" disabled>
-                              </div>
-                          </div>
-                          <div class="col-md-3">
-                              <div class="form-group">
-                                  <label for="">RUC / CI</label>
-                                  <input type="text" id="ruc_ci_cliente" class="form-control" disabled>
-                              </div>
-                          </div>
-                          <div class="col-md-3">
-                              <div class="form-group">
-                                  <label for="">Celular</label>
-                                  <input type="text" id="celular_cliente" class="form-control" disabled>
-                              </div>
-                          </div>
-                          <div class="col-md-3">
-                              <div class="form-group">
-                                  <label for="">Correo</label>
-                                  <input type="text" id="email_cliente" class="form-control" disabled>
-                              </div>
-                          </div>
-                      </div>
-                  </div>
-              </div>
-          </div>
-
-          <!-- REGISTRAR VENTA (col-md-3) AL LADO DE CLIENTES -->
-          <div class="col-md-3">
-              <div class="card card-outline card-primary">
-                  <div class="card-header">
-                      <h3 class="card-title"><i class="fa fa-shopping-cart"></i> Registrar venta</h3>
-                      <div class="card-tools">
-                          <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                              <i class="fas fa-minus"></i>
-                          </button>
-                      </div>
-                  </div>
-
-                  <div class="card-body">
-                      <div class="form-group">
-                          <label for="">Monto a Cobrar</label>
-                          <input type="text" id="monto_a_cancelar" class="form-control" style="text-align: center; background-color: #ffff00; font-weight: bold; font-size: 1.2em;" value="0" readonly>
-                      </div>
-
-                      <div class="row">
-                          <div class="col-md-6">
-                              <div class="form-group">
-                                  <label for="">Total pagado</label>
-                              <input type="text" class="form-control" id="total_pagado" placeholder="0" autocomplete="off">
-                              <input type="hidden" id="monto_a_cancelar_num" value="0">
-                              </div>
-                          </div>
-                          <div class="col-md-6">
-                              <div class="form-group">
-                                  <label for="">Cambio</label>
-                                  <input type="text" id="cambio" class="form-control" style="text-align: center;" readonly>
-                              </div>
-                          </div>
-                      </div>
-
-                      <hr>
-                      <button type="button" id="btn_guardar_venta" class="btn btn-primary btn-block">Guardar venta</button>
-                  </div>
-              </div>
-          </div>
-        </div> <!-- /.row -->
-
       </div> <!-- /.container-fluid -->
     </div> <!-- /.content -->
 </div> <!-- /.content-wrapper -->
 
-<!-- MODAL REGISTRAR NUEVO CLIENTE -->
+<!-- ================= MODAL BÚSQUEDA DE CLIENTE ================= -->
+<div class="modal fade" id="modal-buscar_cliente">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h4 class="modal-title">Búsqueda del cliente</h4>
+                <div class="card-tools">
+                    <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modal-agregar_cliente">
+                        <i class="fa fa-user-plus"></i> Agregar nuevo cliente
+                    </button>
+                    <button type="button" class="close text-white ml-2" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">    
+                    <table id="example2" class="table table-bordered table-striped" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th><center>Nro</center></th>
+                                <th><center>Seleccionar</center></th>
+                                <th><center>Nombre</center></th>      
+                                <th><center>RUC/CI</center></th>
+                                <th><center>Celular</center></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php  
+                            $contador_c = 0;
+                            if (isset($clientes_datos) && is_array($clientes_datos)) {
+                                foreach ($clientes_datos as $cliente){ 
+                            ?>
+                                <tr>
+                                    <td><center><?php echo ++$contador_c; ?></center></td>
+                                    <td>
+                                        <button type="button" class="btn btn-info btn-sm btn-seleccionar_cliente" 
+                                            data-id="<?php echo $cliente['id_cliente']; ?>"
+                                            data-nombre_cliente="<?php echo $cliente['nombre_cliente'];?>"
+                                            data-ruc_ci_cliente="<?php echo $cliente['ruc_ci_cliente'];?>"
+                                            data-celular_cliente="<?php echo $cliente['celular_cliente'];?>"
+                                            data-email_cliente="<?php echo $cliente['email_cliente'];?>">
+                                            Seleccionar
+                                        </button>
+                                    </td>
+                                    <td><?php echo $cliente['nombre_cliente'];?></td>
+                                    <td><?php echo $cliente['ruc_ci_cliente'];?></td>
+                                    <td><?php echo $cliente['celular_cliente'];?></td>
+                                </tr>
+                            <?php
+                                }
+                            }
+                            ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ================= MODAL REGISTRAR NUEVO CLIENTE ================= -->
 <div class="modal fade" id="modal-agregar_cliente">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header" style="background-color: #e0a800; color: white">
+            <div class="modal-header bg-warning text-white">
                 <h4 class="modal-title">Nuevo cliente</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: white">
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            
-            <form action="../app/controllers/clientes/create.php" method="POST" autocomplete="off">
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="nombre_cliente">Nombre del cliente</label>
-                        <input type="text" name="nombre_cliente" class="form-control" placeholder="Ingrese nombre completo" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="ruc_ci_cliente">RUC/CI del cliente</label>
-                        <input type="text" name="ruc_ci_cliente" class="form-control" placeholder="Ingrese NIT o CI" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="celular_cliente">Celular del cliente</label>
-                        <input type="text" name="celular_cliente" class="form-control" placeholder="Ingrese número de celular">
-                    </div>
-                    <div class="form-group">
-                        <label for="email_cliente">Correo del cliente</label>
-                        <input type="email" name="email_cliente" class="form-control" placeholder="Ingrese correo electrónico">
-                    </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Nombre del cliente</label>
+                    <input type="text" id="nombre_cliente_modal" class="form-control" placeholder="Ingrese nombre completo" autocomplete="off">
                 </div>
-                <div class="modal-footer justify-content-between">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-warning btn-block" style="background-color: #ffc107; border-color: #ffc107;">Guardar cliente</button>
+                <div class="form-group">
+                    <label>RUC / CI del cliente</label>
+                    <input type="text" id="ruc_cliente_modal" class="form-control" placeholder="Ingrese RUC o C.I." autocomplete="off">
                 </div>
-            </form>
+                <div class="form-group">
+                    <label>Celular del cliente</label>
+                    <input type="text" id="celular_cliente_modal" class="form-control" placeholder="Ingrese número de celular" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label>Correo del cliente</label>
+                    <input type="email" id="correo_cliente_modal" class="form-control" placeholder="Ingrese correo electrónico" autocomplete="off">
+                </div>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <button type="button" id="btn_create_cliente" class="btn btn-warning text-white">Guardar cliente</button>
+            </div>
         </div>
     </div>
+</div>
 </div>
 
 <?php include('../layout/parte2.php');?>
 <?php include('../layout/mensajes.php');?>
 
+
 <script>
     $(function () {
-        $("#example1").DataTable({ "pageLength": 5, "responsive": true, "autoWidth": false });
-        $("#example2").DataTable({ "pageLength": 5, "responsive": true, "autoWidth": false });
-
-        cargarTablaCarrito();
+        $("#example1").DataTable({
+            "pageLength": 10,
+            "responsive": true,
+            "autoWidth": false,
+            "lengthChange": true,
+            "language": {
+                "emptyTable": "No hay información",
+                "info": "Mostrando _START_ a _END_ de _TOTAL_ Ventas",
+                "infoEmpty": "Mostrando 0 a 0 de 0 Ventas",
+                "infoFiltered": "(Filtrado de _MAX_ total Ventas)",
+                "thousands": ",",
+                "lengthMenu": "Mostrar _MENU_ Ventas",
+                "loadingRecords": "Cargando...",
+                "processing": "Procesando...",
+                "search": "Buscar:",
+                "zeroRecords": "Sin resultados encontrados",
+                "paginate": {
+                    "first": "Primero",
+                    "last": "Último",
+                    "next": "Siguiente",
+                    "previous": "Anterior"
+                }
+            },
+            buttons: [{
+                extend: 'collection',
+                text: 'Reportes',
+                orientation: 'landscape',
+                buttons: [{
+                    text: 'Copiar',
+                    extend: 'copy',
+                }, {
+                    extend: 'pdf',
+                }, {
+                    extend: 'csv',
+                }, {
+                    extend: 'excel',
+                }, {
+                    text: 'Imprimir',
+                    extend: 'print',
+                }]
+            }, {
+                extend: 'colvis',
+                text: 'Visor de Columnas',
+                collectionLayout: 'fixed three-column',
+            }]
+        }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
     });
 
-    // 1. Cargar tabla del carrito
+    $(function () {
+        $("#example2").DataTable({
+            "pageLength": 10,
+            "language": {
+                "emptyTable": "No hay información",
+                "info": "Mostrando _START_ a _END_ de _TOTAL_ Usuarios",
+                "infoEmpty": "Mostrando 0 a 0 de 0 Usuarios",
+                "infoFiltered": "(Filtrado de _MAX_ total Usuarios)",
+                "thousands": ",",
+                "lengthMenu": "Mostrar _MENU_ Usuarios",
+                "loadingRecords": "Cargando...",
+                "processing": "Procesando...",
+                "search": "Buscar:",
+                "zeroRecords": "Sin resultados encontrados",
+                "paginate": {
+                    "first": "Primero",
+                    "last": "Último",
+                    "next": "Siguiente",
+                    "previous": "Anterior"
+                }
+            },
+            "responsive": true,
+            "lengthChange": true,
+            "autoWidth": false,
+            buttons: [{
+                extend: 'collection',
+                text: 'Reportes',
+                orientation: 'landscape',
+                buttons: [{
+                    text: 'Copiar',
+                    extend: 'copy',
+                },{
+                    extend: 'pdf',
+                },{
+                    extend: 'csv',
+                },{
+                    extend: 'excel',
+                },{
+                    text: 'Imprimir',
+                    extend: 'print',
+                }]
+            },{
+                extend: 'colvis',
+                text: 'Visor de Columnas',
+                collectionLayout: 'fixed three-column',
+            }],
+        }).buttons().container().appendTo('#example2_wrapper .col-md-6:eq(0)');
+    });
+
+    $(document).ready(function() {
+        cargarTablaCarrito();
+        // Por defecto al cargar, los enlaces de impresión apuntan a la venta actual o vacía
+        var id_ventas = $('#nro_venta').val();
+        $('#link_imprimir_ticket').attr('href', '../app/controllers/ventas/imprimir_ticket.php?id=' + id_ventas);
+        $('#link_imprimir_factura').attr('href', 'imprimir_factura.php?id=' + id_ventas);
+    });
+
     function cargarTablaCarrito() {
         var id_ventas = $('#nro_venta').val();
         $.ajax({
@@ -419,24 +493,26 @@ $nro_venta_actual = $contador_de_ventas + 1;
         });
     }
 
-    // Seleccionar producto del modal
-    $('#example1').on('click', '.btn-seleccionar', function () {
+    $('#example1').on('click', 'tr.fila-producto', function () {
+        $('#example1 tr').removeClass('table-info');
+        $(this).addClass('table-info');
+
         $('#idProductos').val($(this).data('id'));
         $('#producto').val($(this).data('nombre'));
-        $('#precioVenta').val($(this).data('precioventa-formateado'));
+        $('#precioVenta').val("Gs. " + $(this).data('precioventa-formateado'));
+        $('#cantidad').val('');
         $('#cantidad').focus();
     });
 
-    // Registrar item en el carrito
     $('#btn_registrar_carrito').click(function () {
         var id_ventas = $('#nro_venta').val();
         var idProductos = $('#idProductos').val();
         var cantidad = $('#cantidad').val();
 
         if (idProductos == "") {
-            alert("Debe seleccionar un producto.");
+            alert("Debe seleccionar un producto del lado izquierdo.");
         } else if (cantidad == "" || parseFloat(cantidad) <= 0) {
-            alert("Debe ingresar un peso/cantidad válido.");
+            alert("Debe ingresar una cantidad o peso válido.");
             $('#cantidad').focus();
         } else {
             $.ajax({
@@ -450,11 +526,11 @@ $nro_venta_actual = $contador_de_ventas + 1;
                 success: function(respuesta) {
                     if (respuesta.trim() == "success") {
                         cargarTablaCarrito();
-                        $('#modal-buscar_producto').modal('hide');
                         $('#idProductos').val('');
                         $('#producto').val('');
                         $('#cantidad').val('');
                         $('#precioVenta').val('');
+                        $('#example1 tr').removeClass('table-info');
                     } else {
                         alert("Error al registrar en el carrito: " + respuesta);
                     }
@@ -463,7 +539,6 @@ $nro_venta_actual = $contador_de_ventas + 1;
         }
     });
 
-    // Borrar item del carrito
     function borrarCarrito(id_carrito) {
         $.ajax({
             url: '../app/controllers/ventas/borrar_carrito.php',
@@ -479,7 +554,6 @@ $nro_venta_actual = $contador_de_ventas + 1;
         });
     }
 
-    // Seleccionar cliente del modal
     $('#example2').on('click', '.btn-seleccionar_cliente', function () {
         $('#id_cliente').val($(this).data('id'));
         $('#nombre_cliente').val($(this).data('nombre_cliente'));
@@ -489,16 +563,6 @@ $nro_venta_actual = $contador_de_ventas + 1;
         $('#modal-buscar_cliente').modal('hide');
     });
 
-    // Manejo de modales superpuestos
-    $(document).on('show.bs.modal', '.modal', function () {
-        var zIndex = 1040 + (10 * $('.modal:visible').length);
-        $(this).css('z-index', zIndex);
-        setTimeout(function() {
-            $('.modal-backdrop').not('.modal-stack').css('z-index', zIndex - 1).addClass('modal-stack');
-        }, 0);
-    });
-
-    // Calcular cambio / vuelto
     function calcularCambio() {
         var monto_cancelar = parseFloat($('#monto_a_cancelar_num').val()) || 0;
         var total_pagado_raw = $('#total_pagado').val().replace(/\./g, '');
@@ -512,7 +576,6 @@ $nro_venta_actual = $contador_de_ventas + 1;
         }
     }
 
-    // Evento al escribir en el campo "Total pagado"
     $('#total_pagado').on('keyup change input', function() {
         var valor = $(this).val().replace(/\D/g, "");
         if (valor !== "") {
@@ -521,7 +584,6 @@ $nro_venta_actual = $contador_de_ventas + 1;
         calcularCambio();
     });
 
-    // Guardar venta final (Única versión)
     $('#btn_guardar_venta').click(function() {
         var id_ventas = $('#nro_venta').val();
         var id_cliente = $('#id_cliente').val(); 
@@ -530,7 +592,6 @@ $nro_venta_actual = $contador_de_ventas + 1;
         var total_pagado_raw = $('#total_pagado').val().replace(/\./g, '');
         var total_pagado = parseFloat(total_pagado_raw) || 0;
 
-        // Validaciones
         if (monto_cancelar <= 0) {
             alert("No se puede guardar la venta: Debe seleccionar al menos un producto en el carrito.");
             return;
@@ -542,11 +603,10 @@ $nro_venta_actual = $contador_de_ventas + 1;
         }
 
         if (total_pagado < monto_cancelar) {
-            alert("No se puede guardar la venta: El dinero ingresado en 'Total pagado' es menor al monto a cancelar.");
+            alert("No se puede guardar la venta: El dinero ingresado es menor al monto a cobrar.");
             return;
         }
 
-        // Enviar al controlador por AJAX
         $.ajax({
             url: '../app/controllers/ventas/registrar_venta.php',
             type: 'POST',
@@ -556,11 +616,21 @@ $nro_venta_actual = $contador_de_ventas + 1;
                 total_pagado: total_pagado
             },
             success: function(respuesta) {
-                if (respuesta.trim() == "success") {
+                if (respuesta.trim().startsWith("success")) {
+                    var partes = respuesta.trim().split("-");
+                    var idVentaGenerada = partes.length > 1 ? partes[1] : id_ventas;
+
+                    // Actualizar los enlaces de impresión con la venta recién procesada
+                    $('#link_imprimir_ticket').attr('href', '../app/controllers/ventas/imprimir_ticket.php?id=' + idVentaGenerada);
+                    $('#link_imprimir_factura').attr('href', 'imprimir_factura.php?id=' + idVentaGenerada);
+                    
                     alert("¡Venta registrada con éxito!");
-                    location.reload();
+                    window.location.href = window.location.pathname + '?t=' + new Date().getTime();
+
                 } else if (respuesta.trim() == "carrito_vacio") {
                     alert("El carrito no tiene productos.");
+                } else if (respuesta.trim() == "stock_insuficiente") {
+                    alert("No hay suficiente stock para uno o más productos del carrito.");
                 } else {
                     alert("Ocurrió un error al registrar la venta: " + respuesta);
                 }
@@ -568,7 +638,6 @@ $nro_venta_actual = $contador_de_ventas + 1;
         });
     });
 
-    // Guardar nuevo cliente por AJAX
     $('#btn_create_cliente').click(function () {
         var nombre_cliente  = $('#nombre_cliente_modal').val().trim();
         var ruc_ci_cliente  = $('#ruc_cliente_modal').val().trim();
@@ -600,17 +669,47 @@ $nro_venta_actual = $contador_de_ventas + 1;
             success: function (response) {
                 if (response.status == "success") {
                     alert("Cliente guardado con éxito.");
-                    $('#modal-agregar-cliente').modal('hide');
-                    $('#id_cliente').append(new Option(response.nombre, response.id_cliente, true, true)).trigger('change');
+                    $('#modal-agregar_cliente').modal('hide');
                     
+                    $('#id_cliente').val(response.id_cliente);
+                    $('#nombre_cliente').val(response.nombre);
+                    $('#ruc_ci_cliente').val(response.ruc_ci_cliente);
+
                     $('#nombre_cliente_modal').val('');
                     $('#ruc_cliente_modal').val('');
                     $('#celular_cliente_modal').val('');
                     $('#correo_cliente_modal').val('');
                 } else {
-                    alert("Error al registrar cliente: " + response.message);
+                    alert("Error al guardar el cliente.");
                 }
             }
         });
+    });
+
+    $('#btn_cancelar_venta').click(function() {
+        var id_ventas = $('#nro_venta').val();
+        
+        if (confirm("¿Estás seguro de que deseas cancelar y vaciar el carrito?")) {
+            $.ajax({
+                url: '../app/controllers/ventas/vaciar_carrito.php',
+                type: 'POST',
+                data: { id_ventas: id_ventas },
+                success: function(respuesta) {
+                    if (respuesta.trim() == "success") {
+                        cargarTablaCarrito();
+                        
+                        $('#id_cliente').val('');
+                        $('#nombre_cliente').val('Consumidor Final');
+                        $('#ruc_ci_cliente').val('');
+                        $('#total_pagado').val('');
+                        $('#cambio').val('');
+                        $('#monto_a_cancelar').val('0');
+                        $('#monto_a_cancelar_num').val('0');
+                    } else {
+                        alert("No se pudo vaciar el carrito.");
+                    }
+                }
+            });
+        }
     });
 </script>

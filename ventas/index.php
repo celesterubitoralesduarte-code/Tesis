@@ -61,9 +61,9 @@ include_once __DIR__ . '/../app/controllers/ventas/listado_de_ventas_realizadas.
 
                                             // Cálculo del total real de la venta
                                             $sql_calc = "SELECT dt.cantidad, p.precioVenta 
-                                                         FROM tb_detalle_ventas AS dt 
-                                                         INNER JOIN productos AS p ON dt.idProductos = p.idProductos 
-                                                         WHERE dt.id_ventas = :id_ventas";
+                                                       FROM tb_detalle_ventas AS dt 
+                                                       INNER JOIN productos AS p ON dt.idProductos = p.idProductos 
+                                                       WHERE dt.id_ventas = :id_ventas";
                                             $query_calc = $pdo->prepare($sql_calc);
                                             $query_calc->execute([':id_ventas' => $id_ventas]);
                                             $detalles_calc = $query_calc->fetchAll(PDO::FETCH_ASSOC);
@@ -71,7 +71,7 @@ include_once __DIR__ . '/../app/controllers/ventas/listado_de_ventas_realizadas.
                                             $total_real_venta = 0;
                                             foreach ($detalles_calc as $det) {
                                                 $precio_u = isset($det['precioVenta']) ? $det['precioVenta'] : 0;
-                                                $total_real_venta += ($det['cantidad'] * $precio_u); // CORREGIDO AQUÍ
+                                                $total_real_venta += ($det['cantidad'] * $precio_u);
                                             }
                                     ?>
                                         <tr>
@@ -152,9 +152,9 @@ if (isset($ventas_datos) && is_array($ventas_datos)) {
                     <tbody>
                         <?php
                         $sql_detalles = "SELECT dt.*, p.nomProductos, p.precioVenta 
-                                         FROM tb_detalle_ventas AS dt 
-                                         INNER JOIN productos AS p ON dt.idProductos = p.idProductos 
-                                         WHERE dt.id_ventas = :id_ventas";
+                                       FROM tb_detalle_ventas AS dt 
+                                       INNER JOIN productos AS p ON dt.idProductos = p.idProductos 
+                                       WHERE dt.id_ventas = :id_ventas";
                         $query_detalles = $pdo->prepare($sql_detalles);
                         $query_detalles->execute([':id_ventas' => $id_ventas]);
                         $detalles_datos = $query_detalles->fetchAll(PDO::FETCH_ASSOC);
@@ -247,44 +247,78 @@ if (isset($ventas_datos) && is_array($ventas_datos)) {
 <script>
     $(function () {
         $("#example1").DataTable({
-            "pageLength": 5,
-            "responsive": true,
-            "autoWidth": false,
-            "language": {
-                "emptyTable": "No hay datos disponibles en la tabla",
-                "info": "Mostrando _START_ a _END_ de _TOTAL_ entradas",
-                "infoEmpty": "Mostrando 0 a 0 de 0 entradas",
-                "infoFiltered": "(filtrado de _MAX_ entradas totales)",
-                "lengthMenu": "Mostrar _MENU_ entradas",
-                "loadingRecords": "Cargando...",
-                "processing": "Procesando...",
-                "search": "Buscar:",
-                "zeroRecords": "No se encontraron registros coincidentes",
-                "paginate": {
-                    "first": "Primero",
-                    "last": "Último",
-                    "next": "Siguiente",
-                    "previous": "Anterior"
-                }
+
+        "pageLength":10 ,
+
+        "language": {
+            "emptyTable": "No hay información",
+            "info": "Mostrando _START_ a _END_ de _TOTAL_ Ventas",
+            "infoEmpty": "Mostrando 0 a 0 de 0 Ventas",
+            "infoFiltered": "(Filtrado de _MAX_ total Ventas)",
+            "infoPostFix": "",
+            "thousands": ",",
+            "lengthMenu": "Mostrar _MENU_ Ventas",
+            "loadingRecords": "Cargando...",
+            "processing": "Procesando...",
+            "search": "Buscar:",
+            "zeroRecords": "Sin resultados encontrados",
+
+            "paginate": {
+                "first": "Primero",
+                "last": "Último",
+                "next": "Siguiente",
+                "previous": "Anterior"
+            }
+        },
+
+        "responsive": true,
+        "lengthChange": true,
+        "autoWidth": false,
+
+        buttons: [{
+            extend: 'collection',
+            text: 'Reportes',
+            orientation: 'landscape',
+            buttons: [{
+                text: 'Copiar',
+                extend: 'copy',
+            },{
+                extend: 'pdf',
+            },{
+                extend: 'csv',
+            },{
+                extend: 'excel',
+            },{
+                text: 'Imprimir',
+                extend: 'print',
+            }]
+        },{
+            extend: 'colvis',
+            text: 'Visor de Columnas',
+            collectionLayout: 'fixed three-column',
+        }
+
+        ],
+
+    }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+
+});
+    
+    function preguntar(event, form) {
+        event.preventDefault();
+        Swal.fire({
+            title: '¿Desea eliminar esta venta?',
+            text: "¡Esta acción no se puede deshacer!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
             }
         });
-    });
-    
-function preguntar(event, form) {
-    event.preventDefault();
-    Swal.fire({
-        title: '¿Desea eliminar esta venta?',
-        text: "¡Esta acción no se puede deshacer!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Sí, eliminar',
-        cancelButtonText: 'Cancelar'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            form.submit();
-        }
-    });
-}
+    }
 </script>

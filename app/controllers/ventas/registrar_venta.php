@@ -49,7 +49,7 @@ try {
         }
     }
 
-    // 2. Insertar la cabecera en la tabla 'ventas' (Corregido el parámetro :id_cliente)
+    // 2. Insertar la cabecera en la tabla 'ventas'
     $sentencia_venta = $pdo->prepare("INSERT INTO ventas (id_cliente, total_pagado, fyh_creacion) 
                                         VALUES (:id_cliente, :total_pagado, :fyh_creacion)");
     $sentencia_venta->execute([
@@ -92,7 +92,8 @@ try {
     // Confirmamos toda la transacción
     $pdo->commit();
 
-    echo "success";
+    echo "success-" . $id_venta_oficial;
+    exit;
 
 } catch (Exception $e) {
     if ($pdo->inTransaction()) {
