@@ -368,7 +368,7 @@ $nro_venta_actual = $contador_de_ventas + 1;
                 </button>
             </div>
             
-            <form action="../app/controllers/clientes/create.php" method="POST" autocomplete="off">>
+            <form action="../app/controllers/clientes/create.php" method="POST" autocomplete="off">
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="nombre_cliente">Nombre del cliente</label>
@@ -407,10 +407,11 @@ $nro_venta_actual = $contador_de_ventas + 1;
         cargarTablaCarrito();
     });
 
+    // 1. Cargar tabla del carrito
     function cargarTablaCarrito() {
-        var id_venta = $('#nro_venta').val();
+        var id_ventas = $('#nro_venta').val();
         $.ajax({
-            url: '../app/controllers/ventas/cargar_carrito.php?id_venta=' + id_venta,
+            url: '../app/controllers/ventas/cargar_carrito.php?id_ventas=' + id_ventas,
             type: 'GET',
             success: function(html) {
                 $('#tabla_carrito_body').html(html);
@@ -418,6 +419,7 @@ $nro_venta_actual = $contador_de_ventas + 1;
         });
     }
 
+    // Seleccionar producto del modal
     $('#example1').on('click', '.btn-seleccionar', function () {
         $('#idProductos').val($(this).data('id'));
         $('#producto').val($(this).data('nombre'));
@@ -425,58 +427,59 @@ $nro_venta_actual = $contador_de_ventas + 1;
         $('#cantidad').focus();
     });
 
-   $('#btn_registrar_carrito').click(function () {
-    var id_ventas = $('#nro_venta').val(); // Toma el valor del campo <input id="nro_venta">
-    var idProductos = $('#idProductos').val();
-    var cantidad = $('#cantidad').val();
+    // Registrar item en el carrito
+    $('#btn_registrar_carrito').click(function () {
+        var id_ventas = $('#nro_venta').val();
+        var idProductos = $('#idProductos').val();
+        var cantidad = $('#cantidad').val();
 
-    if (idProductos == "") {
-        alert("Debe seleccionar un producto.");
-    } else if (cantidad == "" || parseFloat(cantidad) <= 0) {
-        alert("Debe ingresar un peso/cantidad válido.");
-        $('#cantidad').focus();
-    } else {
-        $.ajax({
-            url: '../app/controllers/ventas/registrar_carrito.php',
-            type: 'POST',
-            data: {
-                id_ventas: id_ventas, // Se envía con el nombre 'id_ventas'
-                idProductos: idProductos,
-                cantidad: cantidad
-            },
-            success: function(respuesta) {
-                if (respuesta.trim() == "success") {
-                    cargarTablaCarrito();
-                    $('#modal-buscar_producto').modal('hide');
-                    $('#idProductos').val('');
-                    $('#producto').val('');
-                    $('#cantidad').val('');
-                    $('#precioVenta').val('');
-                } else {
-                    alert("Error al registrar en el carrito: " + respuesta);
-                }
-            }
-        });
-    }
-});
-
-    function borrarCarrito(id_carrito) {
-        if (confirm("¿Desea eliminar este producto del carrito?")) {
+        if (idProductos == "") {
+            alert("Debe seleccionar un producto.");
+        } else if (cantidad == "" || parseFloat(cantidad) <= 0) {
+            alert("Debe ingresar un peso/cantidad válido.");
+            $('#cantidad').focus();
+        } else {
             $.ajax({
-                url: '../app/controllers/ventas/borrar_carrito.php',
+                url: '../app/controllers/ventas/registrar_carrito.php',
                 type: 'POST',
-                data: { id_carrito: id_carrito },
+                data: {
+                    id_ventas: id_ventas,
+                    idProductos: idProductos,
+                    cantidad: cantidad
+                },
                 success: function(respuesta) {
                     if (respuesta.trim() == "success") {
                         cargarTablaCarrito();
+                        $('#modal-buscar_producto').modal('hide');
+                        $('#idProductos').val('');
+                        $('#producto').val('');
+                        $('#cantidad').val('');
+                        $('#precioVenta').val('');
                     } else {
-                        alert("Error al eliminar el producto.");
+                        alert("Error al registrar en el carrito: " + respuesta);
                     }
                 }
             });
         }
+    });
+
+    // Borrar item del carrito
+    function borrarCarrito(id_carrito) {
+        $.ajax({
+            url: '../app/controllers/ventas/borrar_carrito.php',
+            type: 'POST',
+            data: { id_carrito: id_carrito },
+            success: function(respuesta) {
+                if (respuesta.trim() == "success") {
+                    cargarTablaCarrito();
+                } else {
+                    alert("Error al intentar eliminar el producto del carrito.");
+                }
+            }
+        });
     }
 
+    // Seleccionar cliente del modal
     $('#example2').on('click', '.btn-seleccionar_cliente', function () {
         $('#id_cliente').val($(this).data('id'));
         $('#nombre_cliente').val($(this).data('nombre_cliente'));
@@ -486,6 +489,7 @@ $nro_venta_actual = $contador_de_ventas + 1;
         $('#modal-buscar_cliente').modal('hide');
     });
 
+    // Manejo de modales superpuestos
     $(document).on('show.bs.modal', '.modal', function () {
         var zIndex = 1040 + (10 * $('.modal:visible').length);
         $(this).css('z-index', zIndex);
@@ -494,205 +498,119 @@ $nro_venta_actual = $contador_de_ventas + 1;
         }, 0);
     });
 
-    $('#total_pagado').keyup(function () {
-        var total_cancelar = $('#monto_a_cancelar').val();
-        var total_pagado = $(this).val();
+    // Calcular cambio / vuelto
+    function calcularCambio() {
+        var monto_cancelar = parseFloat($('#monto_a_cancelar_num').val()) || 0;
+        var total_pagado_raw = $('#total_pagado').val().replace(/\./g, '');
+        var total_pagado = parseFloat(total_pagado_raw) || 0;
 
-        if (total_pagado != "") {
-            var cambio = parseFloat(total_pagado) - parseFloat(total_cancelar);
-            $('#cambio').val(cambio >= 0 ? cambio : 0);
+        if (total_pagado >= monto_cancelar && monto_cancelar > 0) {
+            var cambio = total_pagado - monto_cancelar;
+            $('#cambio').val(new Intl.NumberFormat('de-DE').format(cambio));
         } else {
-            $('#cambio').val("");
+            $('#cambio').val('');
         }
+    }
+
+    // Evento al escribir en el campo "Total pagado"
+    $('#total_pagado').on('keyup change input', function() {
+        var valor = $(this).val().replace(/\D/g, "");
+        if (valor !== "") {
+            $(this).val(new Intl.NumberFormat('de-DE').format(valor));
+        }
+        calcularCambio();
     });
 
-  function cargarTablaCarrito() {
-    var id_ventas = $('#nro_venta').val();
-    $.ajax({
-        url: '../app/controllers/ventas/cargar_carrito.php?id_ventas=' + id_ventas,
-        type: 'GET',
-        success: function(html) {
-            $('#tabla_carrito_body').html(html);
+    // Guardar venta final (Única versión)
+    $('#btn_guardar_venta').click(function() {
+        var id_ventas = $('#nro_venta').val();
+        var id_cliente = $('#id_cliente').val(); 
+        var monto_cancelar = parseFloat($('#monto_a_cancelar_num').val()) || 0;
+        
+        var total_pagado_raw = $('#total_pagado').val().replace(/\./g, '');
+        var total_pagado = parseFloat(total_pagado_raw) || 0;
+
+        // Validaciones
+        if (monto_cancelar <= 0) {
+            alert("No se puede guardar la venta: Debe seleccionar al menos un producto en el carrito.");
+            return;
         }
-    });
 
-    // Función para calcular el cambio / vuelto
-function calcularCambio() {
-    var monto_cancelar = parseFloat($('#monto_a_cancelar_num').val()) || 0;
-    
-    // Eliminamos los puntos que el usuario pueda escribir en el input
-    var total_pagado_raw = $('#total_pagado').val().replace(/\./g, '');
-    var total_pagado = parseFloat(total_pagado_raw) || 0;
+        if ($('#total_pagado').val().trim() === "" || total_pagado <= 0) {
+            alert("No se puede guardar la venta: Debe ingresar el monto en 'Total pagado'.");
+            return;
+        }
 
-    if (total_pagado >= monto_cancelar && monto_cancelar > 0) {
-        var cambio = total_pagado - monto_cancelar;
-        // Muestra el vuelto formateado con puntos (ej: 27.000)
-        $('#cambio').val(new Intl.NumberFormat('de-DE').format(cambio));
-    } else {
-        // Si el dinero ingresado es menor o está vacío, se queda completamente vacío
-        $('#cambio').val('');
-    }
-}
+        if (total_pagado < monto_cancelar) {
+            alert("No se puede guardar la venta: El dinero ingresado en 'Total pagado' es menor al monto a cancelar.");
+            return;
+        }
 
-// Evento al escribir en el campo "Total pagado"
-$('#total_pagado').on('keyup change input', function() {
-    // Formatear dinámicamente lo que digita el cajero con puntos de miles
-    var valor = $(this).val().replace(/\D/g, "");
-    if (valor !== "") {
-        $(this).val(new Intl.NumberFormat('de-DE').format(valor));
-    }
-    calcularCambio();
-});
-function borrarCarrito(id_carrito) {
-    $.ajax({
-        url: '../app/controllers/ventas/borrar_carrito.php',
-        type: 'POST',
-        data: { id_carrito: id_carrito },
-        success: function(respuesta) {
-            if (respuesta.trim() == "success") {
-                cargarTablaCarrito(); // Vuelve a cargar la tabla y actualiza los totales
-            } else {
-                alert("Error al intentar eliminar el producto del carrito.");
+        // Enviar al controlador por AJAX
+        $.ajax({
+            url: '../app/controllers/ventas/registrar_venta.php',
+            type: 'POST',
+            data: {
+                id_ventas: id_ventas,
+                id_cliente: id_cliente,
+                total_pagado: total_pagado
+            },
+            success: function(respuesta) {
+                if (respuesta.trim() == "success") {
+                    alert("¡Venta registrada con éxito!");
+                    location.reload();
+                } else if (respuesta.trim() == "carrito_vacio") {
+                    alert("El carrito no tiene productos.");
+                } else {
+                    alert("Ocurrió un error al registrar la venta: " + respuesta);
+                }
             }
-        }
+        });
     });
-}
-$('#btn_guardar_venta').click(function() {
-    var id_ventas = $('#nro_venta').val(); // Número de venta
-    var id_cliente = $('#id_cliente').val(); // ID del cliente (puede ir vacío)
-    var total_pagado_raw = $('#total_pagado').val().replace(/\./g, ''); // Quitamos puntos
-    var monto_cancelar = parseFloat($('#monto_a_cancelar_num').val()) || 0;
-    var total_pagado = parseFloat(total_pagado_raw) || 0;
 
-    // 1. Validar que haya productos en el carrito
-    if (monto_cancelar <= 0) {
-        alert("El carrito está vacío. Agregue productos antes de registrar la venta.");
-        return;
-    }
+    // Guardar nuevo cliente por AJAX
+    $('#btn_create_cliente').click(function () {
+        var nombre_cliente  = $('#nombre_cliente_modal').val().trim();
+        var ruc_ci_cliente  = $('#ruc_cliente_modal').val().trim();
+        var celular_cliente = $('#celular_cliente_modal').val().trim();
+        var email_cliente   = $('#correo_cliente_modal').val().trim();
 
-    // 2. Validar que el dinero entregado sea suficiente
-    if (total_pagado < monto_cancelar) {
-        alert("El total pagado debe ser mayor o igual al monto a cancelar.");
-        return;
-    }
+        if (nombre_cliente === "") {
+            alert("Por favor ingrese el nombre del cliente.");
+            $('#nombre_cliente_modal').focus();
+            return;
+        }
 
-    // 3. Enviar datos por AJAX al controlador
-    $.ajax({
-        url: '../app/controllers/ventas/registrar_venta.php',
-        type: 'POST',
-        data: {
-            id_ventas: id_ventas,
-            id_cliente: id_cliente,
-            total_pagado: total_pagado
-        },
-        success: function(respuesta) {
-            if (respuesta.trim() == "success") {
-                alert("¡Venta registrada con éxito!");
-                location.reload(); // Recarga la página para iniciar la siguiente venta
-            } else if (respuesta.trim() == "carrito_vacio") {
-                alert("El carrito no tiene productos.");
-            } else {
-                alert("Ocurrió un error al registrar la venta: " + respuesta);
+        if (ruc_ci_cliente === "") {
+            alert("Por favor ingrese el RUC o C.I. del cliente.");
+            $('#ruc_cliente_modal').focus();
+            return;
+        }
+
+        $.ajax({
+            url: '../app/controllers/clientes/guardar_cliente_ajax.php',
+            type: 'POST',
+            data: {
+                nombre_cliente: nombre_cliente,
+                ruc_ci_cliente: ruc_ci_cliente,
+                celular_cliente: celular_cliente,
+                email_cliente: email_cliente
+            },
+            dataType: 'json',
+            success: function (response) {
+                if (response.status == "success") {
+                    alert("Cliente guardado con éxito.");
+                    $('#modal-agregar-cliente').modal('hide');
+                    $('#id_cliente').append(new Option(response.nombre, response.id_cliente, true, true)).trigger('change');
+                    
+                    $('#nombre_cliente_modal').val('');
+                    $('#ruc_cliente_modal').val('');
+                    $('#celular_cliente_modal').val('');
+                    $('#correo_cliente_modal').val('');
+                } else {
+                    alert("Error al registrar cliente: " + response.message);
+                }
             }
-        }
+        });
     });
-});
-$('#btn_guardar_venta').click(function() {
-    var id_ventas = $('#nro_venta').val();
-    var id_cliente = $('#id_cliente').val(); // Puede estar vacío
-    var monto_cancelar = parseFloat($('#monto_a_cancelar_num').val()) || 0;
-    
-    // Le quitamos los puntos de miles al campo total_pagado
-    var total_pagado_raw = $('#total_pagado').val().replace(/\./g, '');
-    var total_pagado = parseFloat(total_pagado_raw) || 0;
-
-    // Validación 1: Verificar que haya productos seleccionados en el carrito
-    if (monto_cancelar <= 0) {
-        alert("No se puede guardar la venta: Debe seleccionar al menos un producto en el carrito.");
-        return;
-    }
-
-    // Validación 2: Verificar que se haya ingresado el dinero recibido
-    if ($('#total_pagado').val().trim() === "" || total_pagado <= 0) {
-        alert("No se puede guardar la venta: Debe ingresar el monto en 'Total pagado'.");
-        return;
-    }
-
-    // Validación 3: Verificar que la plata alcanzada sea suficiente
-    if (total_pagado < monto_cancelar) {
-        alert("No se puede guardar la venta: El dinero ingresado en 'Total pagado' es menor al monto a cancelar.");
-        return;
-    }
-
-    // Si pasó todas las validaciones, enviamos al controlador por AJAX
-    $.ajax({
-        url: '../app/controllers/ventas/registrar_venta.php',
-        type: 'POST',
-        data: {
-            id_ventas: id_ventas,
-            id_cliente: id_cliente,
-            total_pagado: total_pagado
-        },
-        success: function(respuesta) {
-            if (respuesta.trim() == "success") {
-                alert("¡Venta registrada con éxito!");
-                location.reload();
-            } else {
-                alert("Ocurrió un error al registrar la venta: " + respuesta);
-            }
-        }
-    });
-});
-$('#btn_create_cliente').click(function () {
-    var nombre_cliente  = $('#nombre_cliente_modal').val().trim();
-    var ruc_ci_cliente  = $('#ruc_cliente_modal').val().trim();
-    var celular_cliente = $('#celular_cliente_modal').val().trim();
-    var email_cliente   = $('#correo_cliente_modal').val().trim();
-
-    // Validamos únicamente los campos obligatorios
-    if (nombre_cliente === "") {
-        alert("Por favor ingrese el nombre del cliente.");
-        $('#nombre_cliente_modal').focus();
-        return;
-    }
-
-    if (ruc_ci_cliente === "") {
-        alert("Por favor ingrese el RUC o C.I. del cliente.");
-        $('#ruc_cliente_modal').focus();
-        return;
-    }
-
-    // Enviar por AJAX
-    $.ajax({
-        url: '../app/controllers/clientes/guardar_cliente_ajax.php',
-        type: 'POST',
-        data: {
-            nombre_cliente: nombre_cliente,
-            ruc_ci_cliente: ruc_ci_cliente,
-            celular_cliente: celular_cliente, // Puede ir vacío
-            email_cliente: email_cliente      // Puede ir vacío
-        },
-        dataType: 'json',
-        success: function (response) {
-            if (response.status == "success") {
-                alert("Cliente guardado con éxito.");
-                $('#modal-agregar-cliente').modal('hide');
-
-                // Asignar el nuevo cliente al selector o campo de la venta
-                $('#id_cliente').append(new Option(response.nombre, response.id_cliente, true, true)).trigger('change');
-
-                // Limpiar modal
-                $('#nombre_cliente_modal').val('');
-                $('#ruc_cliente_modal').val('');
-                $('#celular_cliente_modal').val('');
-                $('#correo_cliente_modal').val('');
-            } else {
-                alert("Error al registrar cliente: " + response.message);
-            }
-        }
-    });
-});
-
-}
-
 </script>

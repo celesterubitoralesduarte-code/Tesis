@@ -12,14 +12,16 @@ include_once __DIR__ . '/../app/controllers/usuarios/listado_usuarios.php';
 
 <script>
     Swal.fire({
+       
         icon: '<?php echo $_SESSION['icono']; ?>',
         title: '<?php echo $_SESSION['mensaje']; ?>',
         showConfirmButton: false,
         timer: 2500
     });
-</script>
+</script> 
 
 <?php
+
 unset($_SESSION['mensaje']);
 unset($_SESSION['icono']);
 ?>

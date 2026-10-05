@@ -4,7 +4,7 @@ include('../layout/sesion.php');
 
 include('../layout/parte1.php');
 
-include('../app/controllers/roles/listado_roles.php');
+include(__DIR__ . '/../../app/controllers/roles/listado_roles.php');
 ?>
 <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
@@ -42,10 +42,10 @@ include('../app/controllers/roles/listado_roles.php');
                   <div class="card-body"><font dir="auto" style="display: block;">
                     <div class="row">
                       <div class="col-md-12">
-                        <form action="../app/controllers/usuarios/create.php" method="post">
+                        <form action="../app/controllers/usuarios/create.php" method="post" autocomplete="off">
                           <div class="form-group">
                            <label for="">CI</label>
-                           <input type="text" name="ciTrabajador" class="form-control" placeholder= "Ingrese el número de cedula" required>
+                           <input type="number" name="ciTrabajador" class="form-control" placeholder= "Ingrese el número de cedula" required>
                           </div>
                           <div class="form-group">
                            <label for="">Nombres</label>

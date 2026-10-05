@@ -11,11 +11,6 @@ if (empty($id_cliente)) {
     $id_cliente = 1; 
 }
 
-// Si no se seleccionó cliente (por ejemplo, viene un niño o es venta rápida), se asigna el cliente genérico ID 1
-if (empty($id_cliente)) {
-    $id_cliente = 1; // Asegúrate de tener un cliente con ID 1 (ej: "Cliente Ocasional / S/N")
-}
-
 $total_pagado = (float)$total_pagado;
 
 if (empty($id_ventas_temp) || $total_pagado <= 0) {
@@ -27,19 +22,7 @@ try {
     // Iniciamos la transacción SQL para garantizar integridad de datos
     $pdo->beginTransaction();
 
-    // 1. Insertar la cabecera en la tabla 'ventas'
-    $sentencia_venta = $pdo->prepare("INSERT INTO ventas (id_cliente, total_pagado, fyh_creacion) 
-                                      VALUES (:id_cliente, :total_pagado, :fyh_creacion)");
-    $sentencia_venta->execute([
-        ':id_cliente'   => $id_cliente,
-        ':total_pagado' => $total_pagado,
-        ':fyh_creacion' => $fyh_creacion
-    ]);
-
-    // Obtenemos el ID oficial de la venta guardada
-    $id_venta_oficial = $pdo->lastInsertId();
-
-    // 2. Obtener los productos cargados en el carrito temporal
+    // 1. Obtener los productos cargados en el carrito temporal primero para validar stock
     $query_carrito = $pdo->prepare("SELECT * FROM tb_carrito WHERE id_ventas = :id_ventas");
     $query_carrito->execute([':id_ventas' => $id_ventas_temp]);
     $items = $query_carrito->fetchAll(PDO::FETCH_ASSOC);
@@ -49,6 +32,34 @@ try {
         echo "carrito_vacio";
         exit;
     }
+
+    // Validar stock disponible antes de registrar la venta
+    foreach ($items as $item) {
+        $idProductos = $item['idProductos'];
+        $cantidad    = (float)$item['cantidad'];
+
+        $check_stock = $pdo->prepare("SELECT stockProductos FROM productos WHERE idProductos = :idProductos");
+        $check_stock->execute([':idProductos' => $idProductos]);
+        $producto = $check_stock->fetch(PDO::FETCH_ASSOC);
+
+        if (!$producto || $producto['stockProductos'] < $cantidad) {
+            $pdo->rollBack();
+            echo "stock_insuficiente";
+            exit;
+        }
+    }
+
+    // 2. Insertar la cabecera en la tabla 'ventas' (Corregido el parámetro :id_cliente)
+    $sentencia_venta = $pdo->prepare("INSERT INTO ventas (id_cliente, total_pagado, fyh_creacion) 
+                                        VALUES (:id_cliente, :total_pagado, :fyh_creacion)");
+    $sentencia_venta->execute([
+        ':id_cliente'   => $id_cliente,
+        ':total_pagado' => $total_pagado,
+        ':fyh_creacion' => $fyh_creacion
+    ]);
+
+    // Obtenemos el ID oficial de la venta guardada
+    $id_venta_oficial = $pdo->lastInsertId();
 
     foreach ($items as $item) {
         $idProductos = $item['idProductos'];
@@ -84,6 +95,8 @@ try {
     echo "success";
 
 } catch (Exception $e) {
-    $pdo->rollBack();
+    if ($pdo->inTransaction()) {
+        $pdo->rollBack();
+    }
     echo "error_servidor: " . $e->getMessage();
 }

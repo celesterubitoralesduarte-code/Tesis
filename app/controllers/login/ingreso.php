@@ -44,6 +44,8 @@ if (!$acceso_correcto) {
 } else {
 
     session_start();
+    
+    $_SESSION['imagen'] = $trabajador['imagen']; 
 
     $_SESSION['sesion usuarioTrabajador'] = $usuarioTrabajador;
 

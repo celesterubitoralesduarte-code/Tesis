@@ -2,10 +2,6 @@
 include_once __DIR__ . '/sesion.php';
 ?>
 <!DOCTYPE html>
-<!--
-This is a starter template page. Use this page to start your new project from
-scratch. This page gets rid of all links and provides the needed markup only.
--->
 <html lang="es">
 <head>
   <meta charset="utf-8">
@@ -19,7 +15,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <!-- Theme style -->
   <link rel="stylesheet" href="<?php echo $URL; ?>public/templeates/AdminLTE-3.2.0/dist/css/adminlte.min.css">
 
-      <!--Libreria SweetAler2-->
+  <!--Libreria SweetAler2-->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <!-- DataTables -->
@@ -27,26 +23,19 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <link rel="stylesheet" href="<?php echo $URL; ?>public/templeates/AdminLTE-3.2.0/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
   <link rel="stylesheet" href="<?php echo $URL; ?>public/templeates/AdminLTE-3.2.0/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
 </head>
-<body class="hold-transition sidebar-mini">
+<!-- CORRECCIÓN 1: Se agregó 'layout-fixed' para que el menú cubra toda la altura lateral -->
+<body class="hold-transition sidebar-mini layout-fixed">
 <div class="wrapper">
-
-
-
-
 
   <!-- Navbar -->
   <nav class="main-header navbar navbar-expand navbar-white navbar-light">
     <!-- Left navbar links -->
     <ul class="navbar-nav">
       <li class="nav-item">
-        <a class="nav-link"
-          data-widget="pushmenu"
-          href="#"
-          role="button">
-         <i class="fas fa-bars"></i>
+        <a class="nav-link" data-widget="pushmenu" href="#" role="button">
+           <i class="fas fa-bars"></i>
        </a>
       </li>
-
       <li class="nav-item">
         <a href="#" class="nav-link">SISTEMA DE COMPRA Y VENTAS</a>
       </li>
@@ -54,31 +43,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
-      <!-- Navbar Search -->
-      <li class="nav-item"> 
-        <div class="navbar-search-block">
-          <form class="form-inline">
-            <div class="input-group input-group-sm">
-              <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
-              <div class="input-group-append">
-                <button class="btn btn-navbar" type="submit">
-                  <i class="fas fa-search"></i>
-                </button>
-                <button class="btn btn-navbar" type="button" data-widget="navbar-search">
-                  <i class="fas fa-times"></i>
-                </button>
-              </div>
-            </div>
-          </form>
-        </div>
-      </li>
-
-          <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-           
-          <div class="dropdown-divider"></div>
-          <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>
-        </div>
-      </li>
       <li class="nav-item">
         <a class="nav-link" data-widget="fullscreen" href="#" role="button">
           <i class="fas fa-expand-arrows-alt"></i>
@@ -96,12 +60,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
       <span class="brand-text font-weight-light" style="font-size:14px;">Carniceria los Hermanos</span>
     </a>
 
-    <!-- Sidebar -->
+    <!-- CORRECCIÓN 2: El contenedor .sidebar ahora envuelve tanto el panel de usuario como el menú completo -->
     <div class="sidebar">
-      <!-- Sidebar user panel (optional) -->
+      <!-- Sidebar user panel -->
       <div class="user-panel mt-3 pb-3 mb-3 d-flex">
         <div class="image">
-          <img src="<?php echo $URL;?>/public/imagens/" class="img-circle elevation-2" alt="User Image">
+          <img src="<?php echo $URL;?>/public/imagens/<?php echo $_SESSION['imagen']; ?>" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
           <a href="#" class="d-block"><?php echo $NomTrabajadores;?></a>
@@ -111,9 +75,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
       <!-- Sidebar Menu -->
       <nav class="mt-2">
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-          <!-- Add icons to the links using the .nav-icon class
-               with font-awesome or any other icon font library -->
-           <li class="nav-item">
+          
+          <li class="nav-item">
             <a href="#" class="nav-link active">
               <i class="nav-icon fas fa-users"></i>
               <p>
@@ -123,7 +86,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="<?php echo $URL;?>trabajadores" class="nav-link ">
+                <a href="<?php echo $URL;?>trabajadores" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Listado de Usuarios</p>
                 </a>
@@ -137,9 +100,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
             </ul>
           </li>
           
-          
-          
-          
           <li class="nav-item">
             <a href="#" class="nav-link active">
              <i class="nav-icon fas fa-address-card"></i>
@@ -150,7 +110,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="<?php echo $URL;?>roles" class="nav-link ">
+                <a href="<?php echo $URL;?>roles" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Listado de Roles</p>
                 </a>
@@ -160,12 +120,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
                   <i class="far fa-circle nav-icon"></i>
                   <p>Creacion de Rol</p>
                 </a>
-             </li>
+              </li>
             </ul>
           </li>
 
-
-         <li class="nav-item">
+          <li class="nav-item">
             <a href="#" class="nav-link active">
              <i class="nav-icon fas fa-list"></i>
               <p>
@@ -175,7 +134,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="<?php echo $URL;?>productos" class="nav-link ">
+                <a href="<?php echo $URL;?>productos" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Listado de Productos</p>
                 </a>
@@ -185,10 +144,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
                   <i class="far fa-circle nav-icon"></i>
                   <p>Creacion de Productos</p>
                 </a>
-             </li>
+              </li>
             </ul>
           </li>
-
 
           <li class="nav-item">
             <a href="#" class="nav-link active">
@@ -200,7 +158,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="<?php echo $URL;?>compras" class="nav-link ">
+                <a href="<?php echo $URL;?>compras" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Listado de Compras</p>
                 </a>
@@ -210,12 +168,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
                   <i class="far fa-circle nav-icon"></i>
                   <p>Creacion de Compras</p>
                 </a>
-             </li>
+              </li>
             </ul>
           </li>
 
-
-            <li class="nav-item">
+          <li class="nav-item">
             <a href="#" class="nav-link active">
              <i class="nav-icon fas fa-car"></i>
               <p>
@@ -225,7 +182,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="<?php echo $URL;?>proveedores" class="nav-link ">
+                <a href="<?php echo $URL;?>proveedores" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Listado de Proveedores</p>
                 </a>
@@ -233,9 +190,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             </ul>
           </li>
 
-
-
-             <li class="nav-item">
+          <li class="nav-item">
             <a href="#" class="nav-link active">
              <i class="nav-icon fas fa-shopping-basket"></i>
               <p>
@@ -245,7 +200,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="<?php echo $URL;?>ventas" class="nav-link ">
+                <a href="<?php echo $URL;?>ventas" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Listado de Ventas</p>
                 </a>
@@ -255,7 +210,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                   <i class="far fa-circle nav-icon"></i>
                   <p>Realizar Venta</p>
                 </a>
-             </li>
+              </li>
             </ul>
           </li>
 
@@ -269,29 +224,28 @@ scratch. This page gets rid of all links and provides the needed markup only.
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="<?php echo $URL;?>clientes" class="nav-link ">
+                <a href="<?php echo $URL;?>clientes" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Listado de Clientes</p>
                 </a>
               </li>
-              <li class="nav-item">
-               
-             </li>
             </ul>
           </li>
 
-
           <li class="nav-item">
-            <a href="<?php echo $URL;?>app/controllers/login/cerrar_sesion.php" class="nav-link" style="background-color:crimson" >
+            <a href="<?php echo $URL;?>app/controllers/login/cerrar_sesion.php" class="nav-link" style="background-color:crimson">
               <i class="nav-icon fas fa-door-closed"></i>
-              <p>
-                Cerrar Sesion
-              </p>
+              <p>Cerrar Sesion</p>
             </a>
           </li>
+
         </ul>
       </nav>
       <!-- /.sidebar-menu -->
     </div>
     <!-- /.sidebar -->
   </aside>
+
+</div>
+</body>
+</html>
