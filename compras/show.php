@@ -41,23 +41,22 @@ $nuevo_codigo = "P-" . ceros($siguiente_numero);
     <div class="content">
       <div class="container-fluid">
         <div class="row">
-          
-          <!-- COLUMNA IZQUIERDA (DATOS DEL PRODUCTO Y PROVEEDOR) -->
-          <div class="col-md-9">
+         
+         <!-- COLUMNA IZQUIERDA (DATOS DEL PRODUCTO Y PROVEEDOR) -->
+         <div class="col-md-9">
              <div class="card card-info">
-                  <div class="card-header">
-                    <h3 class="card-title">Datos de la Compra</h3>
-                    <div class="card-tools">
-                      <button type="button" class="btn btn-tool" data-lte-toggle="card-collapse" aria-label="Contraer tarjeta">
-                        <i data-lte-icon="expand" class="bi bi-plus-lg"></i>
-                        <i data-lte-icon="collapse" class="bi bi-dash-lg"></i>
-                      </button>
-                    </div>
-                  </div>
-                  
-                  <div class="card-body">                  
+                 <div class="card-header">
+                   <h3 class="card-title">Datos de la Compra</h3>
+                   <div class="card-tools">
+                     <button type="button" class="btn btn-tool" data-lte-toggle="card-collapse" aria-label="Contraer tarjeta">
+                       <i data-lte-icon="expand" class="bi bi-plus-lg"></i>
+                       <i data-lte-icon="collapse" class="bi bi-dash-lg"></i>
+                     </button>
+                   </div>
+                 </div>
+                 
+                 <div class="card-body">                 
                         
-
                         <!-- CAMPOS DEL PRODUCTO -->
                         <div class="row" style="font-size: 12px">
                             <div class="col-md-4">
@@ -152,7 +151,7 @@ $nuevo_codigo = "P-" . ceros($siguiente_numero);
                                 </div>
                             </div>
 
-                            <div class="row">                 
+                            <div class="row">                
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="">Nombre de la Empresa </label>
@@ -162,7 +161,7 @@ $nuevo_codigo = "P-" . ceros($siguiente_numero);
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="">Email</label>
-                                        <input type="email"nombre_proveedor  value="<?php echo $email_proveedor;?>" id="email" class="form-control" disabled>
+                                        <input type="email" nombre_proveedor  value="<?php echo $email_proveedor;?>" id="email" class="form-control" disabled>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
@@ -184,10 +183,10 @@ $nuevo_codigo = "P-" . ceros($siguiente_numero);
                       </div>
                   </div>
              </div>
-          </div>
+         </div>
 
-          <!-- COLUMNA DERECHA (DATOS DE LA COMPRA) -->
-          <div class="col-md-3">
+         <!-- COLUMNA DERECHA (DATOS DE LA COMPRA) -->
+         <div class="col-md-3">
               <div class="card card-outline card-primary">
                   <div class="card-header">
                       <h3 class="card-title">Detalle de la Compra</h3>
@@ -195,7 +194,7 @@ $nuevo_codigo = "P-" . ceros($siguiente_numero);
                           <button type="button" class="btn btn-tool" data-card-widget="collapse">
                               <i class="fas fa-minus"></i>
                           </button>
-                      </div>    
+                      </div>   
                   </div> 
                   
                   <div class="card-body">
@@ -223,25 +222,26 @@ $nuevo_codigo = "P-" . ceros($siguiente_numero);
                                 <input type="text" value="<?php echo number_format($precio_compra, 0, ',', '.'); ?>" class="form-control formato-precio" id="precio_compra_controlador" disabled>
                               </div>
 
-                             
-
                               <div class="form-group">
                                   <label for="">Cantidad de la Compra</label>
-                                 <input type="text" value="<?php echo formatearStock($cantidad, $unidad_medida); ?>"id="cantidad_compra" style="text-align: center" class="form-control" disabled>
+                                 <input type="text" value="<?php echo formatearStock($cantidad, $unidad_medida); ?>" id="cantidad_compra" style="text-align: center" class="form-control" disabled>
+                              </div>
 
-     
-          
                               <div class="form-group">
                                   <label for="">Usuario</label>
                                   <input type="text" class="form-control" value="<?php echo $nombre_usuario ?? ''; ?>" disabled>
                               </div>
+
+                              <!-- Botón Volver ubicado abajo sin icono -->
+                              <div class="form-group mt-4">
+                                  <a href="<?php echo $URL;?>/compras" class="btn btn-secondary btn-block">Volver</a>
+                              </div>
+
                           </div>
                       </div>
-                        <hr>
-                          <div class="col-md-12">
+                  </div>
               </div>
-              </div>
-          </div>
+         </div>
 
         </div>
       </div>
@@ -250,4 +250,3 @@ $nuevo_codigo = "P-" . ceros($siguiente_numero);
 
 <?php include('../layout/parte2.php');?>
 <?php include('../layout/mensajes.php');?>
-

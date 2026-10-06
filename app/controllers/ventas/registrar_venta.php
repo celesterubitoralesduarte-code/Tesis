@@ -6,6 +6,8 @@ $id_cliente     = $_POST['id_cliente'] ?? '';
 $total_pagado   = $_POST['total_pagado'] ?? 0;
 $fyh_creacion   = date('Y-m-d H:i:s');
 
+$total_pagado = round((float)$total_pagado);
+
 // Si el cajero dejó vacío el campo cliente, asignamos automáticamente el ID 1 (Cliente Ocasional / S/N)
 if (empty($id_cliente)) {
     $id_cliente = 1; 

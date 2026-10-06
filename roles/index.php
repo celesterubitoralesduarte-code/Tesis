@@ -142,29 +142,7 @@ $(function () {
         "responsive": true,
         "lengthChange": true,
         "autoWidth": false,
-        buttons: [{
-            extend: 'collection',
-            Text: 'Reportes',
-            orientation: 'landscape',
-            buttons: [{
-                text: 'Copiar',
-                extend: 'copy',
-            },{
-                extend: 'pdf',
-            },{
-                extend: 'csv',
-            },{
-                extend: 'excel',
-            },{
-                text: 'Imprimir',
-                extend: 'print',
-            }]
-        },{
-            extend: 'colvis',
-            text: 'Visor de Columnas',
-            collectionLayout: 'fixed three-column',
-        }
-        ],
+       
 
     }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
 

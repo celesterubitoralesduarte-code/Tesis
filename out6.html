@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Carniceria los Hermanos</title>
+
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="http://localhost/pdv_tesis/public/templeates/AdminLTE-3.2.0/plugins/fontawesome-free/css/all.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="http://localhost/pdv_tesis/public/templeates/AdminLTE-3.2.0/dist/css/adminlte.min.css">
+
+  <!--Libreria SweetAler2-->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <!-- DataTables -->
+  <link rel="stylesheet" href="http://localhost/pdv_tesis/public/templeates/AdminLTE-3.2.0/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+  <link rel="stylesheet" href="http://localhost/pdv_tesis/public/templeates/AdminLTE-3.2.0/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+  <link rel="stylesheet" href="http://localhost/pdv_tesis/public/templeates/AdminLTE-3.2.0/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+</head>
+<!-- CORRECCIÓN 1: Se agregó 'layout-fixed' para que el menú cubra toda la altura lateral -->
+<body class="hold-transition sidebar-mini layout-fixed">
+<div class="wrapper">
+
+  <!-- Navbar -->
+  <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+    <!-- Left navbar links -->
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" data-widget="pushmenu" href="#" role="button">
+           <i class="fas fa-bars"></i>
+       </a>
+      </li>
+      <li class="nav-item">
+        <a href="#" class="nav-link">SISTEMA DE COMPRA Y VENTAS</a>
+      </li>
+    </ul>
+
+    <!-- Right navbar links -->
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+        <a class="nav-link" data-widget="fullscreen" href="#" role="button">
+          <i class="fas fa-expand-arrows-alt"></i>
+        </a>
+      </li>
+    </ul>
+  </nav>
+  <!-- /.navbar -->
+
+  <!-- Main Sidebar Container -->
+  <aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+    <a href="http://localhost/pdv_tesis/" class="brand-link">
+      <img src="http://localhost/pdv_tesis//public/imagens/logoCarniceria.jpg" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+      <span class="brand-text font-weight-light" style="font-size:14px;">Carniceria los Hermanos</span>
+    </a>
+
+    <!-- CORRECCIÓN 2: El contenedor .sidebar ahora envuelve tanto el panel de usuario como el menú completo -->
+    <div class="sidebar">
+      <!-- Sidebar user panel -->
+      <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+        <div class="image">
+          <img src="http://localhost/pdv_tesis//public/imagens/yop.jpeg" class="img-circle elevation-2" alt="User Image">
+        </div>
+        <div class="info">
+          <a href="#" class="d-block">Rubi Toralessss</a>
+        </div>
+      </div>
+
+   <style>
+     .seccion-bloqueada > a,
+     .seccion-bloqueada .nav-treeview .nav-link {
+       background-color: #6c757d !important;
+       color: #dee2e6 !important;
+       pointer-events: none !important;
+       cursor: default !important;
+       opacity: .65;
+     }
+   </style>
+      <!-- Sidebar Menu -->
+      <nav class="mt-2">
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+          
+          <li class="nav-item ">
+            <a href="#" class="nav-link active">
+              <i class="nav-icon fas fa-users"></i>
+              <p>
+                Usuarios
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="http://localhost/pdv_tesis/trabajadores" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Listado de Usuarios</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="http://localhost/pdv_tesis/trabajadores/create.php" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Creacion de Usuarios</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+          
+          <li class="nav-item ">
+            <a href="#" class="nav-link active">
+             <i class="nav-icon fas fa-address-card"></i>
+              <p>
+                Roles
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="http://localhost/pdv_tesis/roles" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Listado de Roles</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="http://localhost/pdv_tesis/roles/create.php" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Creacion de Rol</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="nav-item ">
+            <a href="#" class="nav-link active">
+             <i class="nav-icon fas fa-list"></i>
+              <p>
+                Productos
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="http://localhost/pdv_tesis/productos" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Listado de Productos</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="http://localhost/pdv_tesis/productos/create.php" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Creacion de Productos</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="nav-item ">
+            <a href="#" class="nav-link active">
+             <i class="nav-icon fas fa-cart-plus"></i>
+              <p>
+                Compras
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="http://localhost/pdv_tesis/compras" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Listado de Compras</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="http://localhost/pdv_tesis/compras/create.php" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Creacion de Compras</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="nav-item ">
+            <a href="#" class="nav-link active">
+             <i class="nav-icon fas fa-car"></i>
+              <p>
+                Proveedores
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="http://localhost/pdv_tesis/proveedores" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Listado de Proveedores</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="nav-item ">
+            <a href="#" class="nav-link active">
+             <i class="nav-icon fas fa-shopping-basket"></i>
+              <p>
+                Ventas
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="http://localhost/pdv_tesis/ventas" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Listado de Ventas</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="http://localhost/pdv_tesis/ventas/create.php" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Realizar Venta</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="nav-item ">
+            <a href="#" class="nav-link active">
+             <i class="nav-icon fas fa-user-friends"></i>
+              <p>
+                Clientes
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="http://localhost/pdv_tesis/clientes" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Listado de Clientes</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="nav-item">
+            <a href="http://localhost/pdv_tesis/app/controllers/login/cerrar_sesion.php" class="nav-link" style="background-color:crimson">
+              <i class="nav-icon fas fa-door-closed"></i>
+              <p>Cerrar Sesion</p>
+            </a>
+          </li>
+
+        </ul>
+      </nav>
+      <!-- /.sidebar-menu -->
+    </div>
+    <!-- /.sidebar -->
+  </aside>
+
+</div>
+</body>
+</html><!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-12">
+            <h1 class="m-0">Actualizar Usuario</h1>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <div class="content">
+      <div class="container-fluid">
+      
+      <div class="row">
+        <div class="col-md-6">
+           <div class="card card-success">
+                  <div class="card-header">
+                    <h3 class="card-title"><font dir="auto" style="vertical-align: inherit;"><font dir="auto" style="vertical-align: inherit;"> Ingrese los datos con cuidado</font></font></h3>
+
+                    <div class="card-tools">
+                      <button type="button" class="btn btn-tool" data-lte-toggle="card-collapse" aria-label="Contraer tarjeta">
+                        <i data-lte-icon="expand" class="bi bi-plus-lg"></i>
+                        <i data-lte-icon="collapse" class="bi bi-dash-lg"></i>
+                      </button>
+                    </div>
+                    <!-- /.card-tools -->
+                  </div>
+                  <!-- /.card-header -->
+                  <div class="card-body"><font dir="auto" style="display: block;">
+                    <div class="row">
+                      <div class="col-md-12">
+                        
+                      <form action="../app/controllers/usuarios/update.php" method="post">
+                       <input type="text" name="id_usuario" value="1" hidden>
+                          <div class="form-group">
+                           <label for="">CI</label>
+                           <input type="text" name="ciTrabajador" class="form-control" value="123" placeholder= "Ingrese el número de cedula" required>
+                          </div>
+                          <div class="form-group">
+                           <label for="">Nombres</label>
+                           <input type="text" name="NomTrabajadores" class="form-control" value="Rubi Toralessss"placeholder= "Escriba el nombre del nuevo usuario" required>
+                          </div>
+                           <div class="form-group">
+                           <label for="">Usuario</label>
+                           <input type="text" name="usuarioTrabajador" class="form-control" value="Larubis" placeholder= "Ingrese el usuario" autocomplete="off" required>
+                          </div>
+                          <div class="form-group">
+                           <label for="">Rol del Usuario</label>
+                         <select name="id_rol" id="id_rol" class="form-control">
+            <option value="1" selected="selected">
+            Administradoree        </option>
+            <option value="3" >
+            Cajero        </option>
+            <option value="4" >
+            Encargado del Inventario        </option>
+            <option value="5" >
+            Contador        </option>
+      </select>
+                          </div>
+                           <div class="form-group">
+                           <label for="">Contraseña</label>
+                           <input type="password" name="pasworTrabaj" class="form-control" value="" placeholder= "" autocomplete="new-password" >
+                          </div>
+                          <div class="form-group">
+                           <label for="">Repita la Contraseña</label>
+                           <input type="password" name="pasworTrabaj_repeat" class="form-control" placeholder= "" autocomplete="new-password" >
+                          </div>
+                           <div class="form-group">
+                           <label for="">Teléfono</label>
+                           <input type="tel" name="TelefTrabaj" class="form-control" value="123" placeholder= "Ingrese el número de telefono">
+                          </div>
+                          <hr>
+                          <div class="form-group">
+                            <a href="index.php" class= "btn btn-secondary">Cancelar</a>
+                            <button type="submit" class="btn btn-success" >Actualizar</button>
+                          </div>
+                        </form>
+                       
+                      </div>
+                    </div>
+                  </div>
+                  <!-- /.card-body -->
+                   
+                </div>
+
+        </div>
+      </div>
+
+        <!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+
+
+
+<!-- Main Footer -->
+  <footer class="main-footer">
+    <!-- To the right -->
+    <div class="float-right d-none d-sm-inline">
+      Anything you want
+    </div>
+    <!-- Default to the left -->
+    <strong>Copyright &copy; 2026 <a href="https://adminlte.io">AdminLTE.io</a>.</strong> All rights reserved.
+  </footer>
+</div>
+<!-- ./wrapper -->
+
+<!-- REQUIRED SCRIPTS -->
+
+<!-- jQuery -->
+<script src="http://localhost/pdv_tesis/public/templeates/AdminLTE-3.2.0/plugins/jquery/jquery.min.js"></script>
+<!-- Bootstrap 4 -->
+<script src="http://localhost/pdv_tesis/public/templeates/AdminLTE-3.2.0/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- AdminLTE App -->
+<script src="http://localhost/pdv_tesis/public/templeates/AdminLTE-3.2.0/dist/js/adminlte.min.js"></script>
+
+<!-- DataTables  & Plugins -->
+<script src="http://localhost/pdv_tesis/public/templeates/AdminLTE-3.2.0/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="http://localhost/pdv_tesis/public/templeates/AdminLTE-3.2.0/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="http://localhost/pdv_tesis/public/templeates/AdminLTE-3.2.0/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="http://localhost/pdv_tesis/public/templeates/AdminLTE-3.2.0/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<script src="http://localhost/pdv_tesis/public/templeates/AdminLTE-3.2.0/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+<script src="http://localhost/pdv_tesis/public/templeates/AdminLTE-3.2.0/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+<script src="http://localhost/pdv_tesis/public/templeates/AdminLTE-3.2.0/plugins/jszip/jszip.min.js"></script>
+<script src="http://localhost/pdv_tesis/public/templeates/AdminLTE-3.2.0/plugins/pdfmake/pdfmake.min.js"></script>
+<script src="http://localhost/pdv_tesis/public/templeates/AdminLTE-3.2.0/plugins/pdfmake/vfs_fonts.js"></script>
+<script src="http://localhost/pdv_tesis/public/templeates/AdminLTE-3.2.0/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+<script src="http://localhost/pdv_tesis/public/templeates/AdminLTE-3.2.0/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+<script src="http://localhost/pdv_tesis/public/templeates/AdminLTE-3.2.0/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+
+<!-- SCRIPT DE FORMATO DE MILES EN TIEMPO REAL -->
+<script>
+function formatearMiles(input) {
+    let valor = input.value.replace(/\D/g, ""); // Remueve cualquier caracter que no sea número
+    if (valor !== "") {
+        input.value = new Intl.NumberFormat('de-DE').format(valor); // Formato con puntos: 10.000.000
+    } else {
+        input.value = "";
+    }
+}
+
+$(document).ready(function () {
+    // Escucha automáticamente a cualquier input con la clase 'formato-precio'
+    $(document).on('input', '.formato-precio', function () {
+        formatearMiles(this);
+    });
+});
+</script>
+
+</body>
+</html>

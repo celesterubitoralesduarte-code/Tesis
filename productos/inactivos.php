@@ -2,7 +2,8 @@
 include('../app/config.php');
 include('../layout/sesion.php');
 include('../layout/parte1.php');
-include_once __DIR__ . '/../app/controllers/productos/listado_de_productos.php';
+// Incluimos el controlador específico para inactivos
+include_once __DIR__ . '/../app/controllers/productos/listado_de_productos_inactivos.php';
 ?>
 
 <?php if (isset($_SESSION['mensaje'])): ?>
@@ -27,7 +28,7 @@ unset($_SESSION['icono']);
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-12">
-            <h1 class="m-0">Listado de Productos</h1>
+            <h1 class="m-0">Productos Inactivos</h1>
           </div><!-- /.col -->
         </div><!-- /.row -->
       </div><!-- /.container-fluid -->
@@ -40,9 +41,9 @@ unset($_SESSION['icono']);
       
       <div class="row">
         <div class="col-md-12">
-             <div class="card card-outline card-success">
+             <div class="card card-outline card-warning">
                   <div class="card-header">
-                    <h3 class="card-title">Productos Registrados</h3>
+                    <h3 class="card-title">Productos Desactivados Registrados</h3>
 
                     <div class="card-tools">
                       <button type="button" class="btn btn-tool" data-lte-toggle="card-collapse" aria-label="Contraer tarjeta">
@@ -54,7 +55,7 @@ unset($_SESSION['icono']);
                   </div>
                   <!-- /.card-header -->
                   <div class="card-body" style="box-sizing: border-box; display: block;">                    
-                 <table id="example1" class="table table-bordered table-striped table-sm">
+                   <table id="example1" class="table table-bordered table-striped table-sm">
     <thead>
         <tr>
             <th><center>Nro</center></th>
@@ -122,12 +123,11 @@ unset($_SESSION['icono']);
     <center>
         <div class="btn-group">
             <a href="show.php?id=<?php echo $idProductos; ?>" class="btn btn-info btn-sm"><i class="fa fa-eye"></i> Ver</a>
-            <a href="update.php?id=<?php echo $idProductos; ?>" class="btn btn-success btn-sm"><i class="fa fa-pencil-alt"></i> Editar</a>
-            <a href="delete.php?id=<?php echo $idProductos; ?>" class="btn btn-warning btn-sm"><i class="fa fa-ban"></i> Desactivar</a>
+            <!-- Botón para activar apuntando al controlador de activación -->
+            <a href="../app/controllers/productos/activar.php?id=<?php echo $idProductos; ?>" class="btn btn-success btn-sm"><i class="fa fa-check"></i> Activar</a>
         </div>
     </center>
 </td>
-                </td>
             </tr>
         <?php
         }
@@ -153,7 +153,7 @@ $(function () {
     $("#example1").DataTable({
         "pageLength": 5,
         "language": {
-            "emptyTable": "No hay información",
+            "emptyTable": "No hay productos inactivos",
             "info": "Mostrando _START_ a _END_ de _TOTAL_ Productos",
             "infoEmpty": "Mostrando 0 a 0 de 0 Productos",
             "infoFiltered": "(Filtrado de _MAX_ total Productos)",

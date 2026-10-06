@@ -149,10 +149,10 @@ if (isset($_GET['id'])) {
                
                 <img src="<?php echo $URL; ?>/public/imagens/logoCarniceria.jpg" alt="Logo Carnicería" class="logo">
                 <div class="empresa-info">
-                    <b>SISTEMA DE VENTAS WEB</b><br>
+                    <b>CARNICERIA LOS HERMANOS</b><br>
                     Dirección de tu Negocio<br>
                     Teléfono: 0900-000000<br>
-                    CIUDAD - PARAGUAY
+                    CAAGUAZU - PARAGUAY
                 </div>
             </td>
             <td width="40%"></td>

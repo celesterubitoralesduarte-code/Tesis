@@ -1,5 +1,4 @@
 <?php
-
 include_once __DIR__ . '/../../config.php';
 
 $sql_productos = "SELECT 
@@ -16,7 +15,7 @@ $sql_productos = "SELECT
     t.usuarioTrabajador
 FROM productos AS p
 LEFT JOIN trabajadores as t on t.idTrabajadores = p.idTrabajadores 
-WHERE p.estado = 1";
+WHERE p.estado = 0";
 
 $squery_productos = $pdo->prepare($sql_productos);
 $squery_productos->execute();
@@ -25,7 +24,6 @@ $productos_datos = $squery_productos->fetchAll(PDO::FETCH_ASSOC);
 
 // Limpia los valores numéricos de ambos stocks
 foreach ($productos_datos as &$producto) {
-    // AGREGAMOS 'stockMinimo' AL ARRAY
     foreach (['stockProductos', 'stockMinimo'] as $campo) {
         if (!isset($producto[$campo])) {
             continue;

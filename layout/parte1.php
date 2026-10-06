@@ -22,6 +22,8 @@ include_once __DIR__ . '/sesion.php';
   <link rel="stylesheet" href="<?php echo $URL; ?>public/templeates/AdminLTE-3.2.0/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
   <link rel="stylesheet" href="<?php echo $URL; ?>public/templeates/AdminLTE-3.2.0/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
   <link rel="stylesheet" href="<?php echo $URL; ?>public/templeates/AdminLTE-3.2.0/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+
+  
 </head>
 <!-- CORRECCIÓN 1: Se agregó 'layout-fixed' para que el menú cubra toda la altura lateral -->
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -72,11 +74,21 @@ include_once __DIR__ . '/sesion.php';
         </div>
       </div>
 
+   <style>
+     .seccion-bloqueada > a,
+     .seccion-bloqueada .nav-treeview .nav-link {
+       background-color: #6c757d !important;
+       color: #dee2e6 !important;
+       pointer-events: none !important;
+       cursor: default !important;
+       opacity: .65;
+     }
+   </style>
       <!-- Sidebar Menu -->
       <nav class="mt-2">
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
           
-          <li class="nav-item">
+          <li class="nav-item <?php echo ($tipoRol === 'admin') ? '' : 'seccion-bloqueada'; ?>">
             <a href="#" class="nav-link active">
               <i class="nav-icon fas fa-users"></i>
               <p>
@@ -100,7 +112,7 @@ include_once __DIR__ . '/sesion.php';
             </ul>
           </li>
           
-          <li class="nav-item">
+          <li class="nav-item <?php echo ($tipoRol === 'admin') ? '' : 'seccion-bloqueada'; ?>">
             <a href="#" class="nav-link active">
              <i class="nav-icon fas fa-address-card"></i>
               <p>
@@ -124,7 +136,7 @@ include_once __DIR__ . '/sesion.php';
             </ul>
           </li>
 
-          <li class="nav-item">
+          <li class="nav-item <?php echo ($tipoRol === 'admin' || $tipoRol === 'inventario') ? '' : 'seccion-bloqueada'; ?>">
             <a href="#" class="nav-link active">
              <i class="nav-icon fas fa-list"></i>
               <p>
@@ -145,10 +157,16 @@ include_once __DIR__ . '/sesion.php';
                   <p>Creacion de Productos</p>
                 </a>
               </li>
+               <li class="nav-item">
+                <a href="<?php echo $URL;?>productos/inactivos.php" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Productos Inactivos</p>
+                </a>
+              </li>
             </ul>
           </li>
 
-          <li class="nav-item">
+          <li class="nav-item <?php echo ($tipoRol === 'admin' || $tipoRol === 'inventario') ? '' : 'seccion-bloqueada'; ?>">
             <a href="#" class="nav-link active">
              <i class="nav-icon fas fa-cart-plus"></i>
               <p>
@@ -172,7 +190,7 @@ include_once __DIR__ . '/sesion.php';
             </ul>
           </li>
 
-          <li class="nav-item">
+          <li class="nav-item <?php echo ($tipoRol === 'admin' || $tipoRol === 'inventario') ? '' : 'seccion-bloqueada'; ?>">
             <a href="#" class="nav-link active">
              <i class="nav-icon fas fa-car"></i>
               <p>
@@ -190,7 +208,7 @@ include_once __DIR__ . '/sesion.php';
             </ul>
           </li>
 
-          <li class="nav-item">
+          <li class="nav-item <?php echo ($tipoRol === 'admin' || $tipoRol === 'cajero') ? '' : 'seccion-bloqueada'; ?>">
             <a href="#" class="nav-link active">
              <i class="nav-icon fas fa-shopping-basket"></i>
               <p>
@@ -214,7 +232,7 @@ include_once __DIR__ . '/sesion.php';
             </ul>
           </li>
 
-          <li class="nav-item">
+          <li class="nav-item <?php echo ($tipoRol === 'admin' || $tipoRol === 'cajero') ? '' : 'seccion-bloqueada'; ?>">
             <a href="#" class="nav-link active">
              <i class="nav-icon fas fa-user-friends"></i>
               <p>
@@ -246,6 +264,3 @@ include_once __DIR__ . '/sesion.php';
     <!-- /.sidebar -->
   </aside>
 
-</div>
-</body>
-</html>

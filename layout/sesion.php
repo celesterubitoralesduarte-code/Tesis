@@ -18,8 +18,9 @@ $usuario_sesion = $_SESSION['sesion usuarioTrabajador'];
 $idTrabajadores = "";
 $NomTrabajadores = "";
 $rol_sesion = "";
+$id_rol_sesion = "";
 
-$sql = "SELECT us.idTrabajadores as idTrabajadores, us.NomTrabajadores as NomTrabajadores, us.usuarioTrabajador as usuarioTrabajador, 
+$sql = "SELECT us.idTrabajadores as idTrabajadores, us.NomTrabajadores as NomTrabajadores, us.usuarioTrabajador as usuarioTrabajador, us.id_rol as id_rol,
         rol.rol_name as rol_name FROM trabajadores as us INNER JOIN tb_roles as rol ON us.id_rol = rol.id_rol WHERE usuarioTrabajador='$usuario_sesion'";
 
 $squery = $pdo->prepare($sql);
@@ -31,4 +32,8 @@ foreach ($trabajadores as $trabajador) {
     $idTrabajadores = $trabajador['idTrabajadores'];
     $NomTrabajadores = $trabajador['NomTrabajadores'];
     $rol_sesion = $trabajador['rol_name'];
+    $id_rol_sesion = $trabajador['id_rol'];
 }
+
+// Middleware RBAC: bloquea el acceso a rutas no autorizadas según el rol
+require_once __DIR__ . '/../app/middleware/permisos.php';

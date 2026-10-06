@@ -36,7 +36,7 @@ $detalles = $query_detalle->fetchAll(PDO::FETCH_ASSOC);
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Ticket de Venta #<?php echo $id_ventas; ?></title>
+   
     <style>
         /* Estilos optimizados para impresoras térmicas (ancho aprox 80mm) */
         body {

@@ -71,12 +71,12 @@ if (count($items) > 0) {
 </tr>
 
 <script>
-    // Formatear el monto a cancelar con separador de miles de Guaraníes
-    var grand_total = <?= $grand_total; ?>;
+    // Redondeamos el total a número entero en PHP antes de enviarlo a JavaScript
+    var grand_total = Math.round(<?= $grand_total; ?>);
     var grand_total_formateado = new Intl.NumberFormat('de-DE').format(grand_total);
     
     $('#monto_a_cancelar').val(grand_total_formateado);
-    $('#monto_a_cancelar_num').val(grand_total); // Guardamos el número sin puntos en un input oculto para cálculos
+    $('#monto_a_cancelar_num').val(grand_total); // Guarda el número entero sin decimales
 
     // Recalcular el vuelto si ya había algo escrito en "Total pagado"
     calcularCambio();

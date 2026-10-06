@@ -3,8 +3,7 @@ include('../app/config.php');
 include('../layout/sesion.php');
 
 include('../layout/parte1.php');
-
-include(__DIR__ . '/../../app/controllers/roles/listado_roles.php');
+include __DIR__ . '/../app/controllers/roles/listado_roles.php';
 ?>
 <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">

@@ -8,6 +8,18 @@ include_once __DIR__ . '/../app/controllers/ventas/listado_de_ventas.php';
 include_once __DIR__ . '/../app/controllers/ventas/listado_de_ventas_realizadas.php';
 ?>
 
+<style>
+    /* Estilos generales para la tabla en pantalla */
+    #example1 td {
+        vertical-align: middle !important;
+    }
+    
+    #example1 th {
+        text-align: center;
+        vertical-align: middle !important;
+    }
+</style>
+
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
@@ -49,7 +61,7 @@ include_once __DIR__ . '/../app/controllers/ventas/listado_de_ventas_realizadas.
                                         <th><center>Acciones</center></th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                               <tbody>
                                     <?php
                                     $contador = 0;
                                     if (isset($ventas_datos) && is_array($ventas_datos)) {
@@ -59,31 +71,39 @@ include_once __DIR__ . '/../app/controllers/ventas/listado_de_ventas_realizadas.
                                             $nombre_cliente = !empty($venta['nombre_cliente']) ? $venta['nombre_cliente'] : 'Sin Cliente';
                                             $fecha_creacion = date('d/m/Y', strtotime($venta['fyh_creacion']));
 
-                                            // Cálculo del total real de la venta
-                                            $sql_calc = "SELECT dt.cantidad, p.precioVenta 
-                                                       FROM tb_detalle_ventas AS dt 
-                                                       INNER JOIN productos AS p ON dt.idProductos = p.idProductos 
-                                                       WHERE dt.id_ventas = :id_ventas";
+                                            // Cálculo del total real de la venta y obtención de productos
+                                            $sql_calc = "SELECT dt.cantidad, p.nomProductos, p.precioVenta 
+                                                         FROM tb_detalle_ventas AS dt 
+                                                         INNER JOIN productos AS p ON dt.idProductos = p.idProductos 
+                                                         WHERE dt.id_ventas = :id_ventas";
                                             $query_calc = $pdo->prepare($sql_calc);
                                             $query_calc->execute([':id_ventas' => $id_ventas]);
                                             $detalles_calc = $query_calc->fetchAll(PDO::FETCH_ASSOC);
 
                                             $total_real_venta = 0;
+                                            $nombres_prods_print = [];
                                             foreach ($detalles_calc as $det) {
                                                 $precio_u = isset($det['precioVenta']) ? $det['precioVenta'] : 0;
                                                 $total_real_venta += ($det['cantidad'] * $precio_u);
+                                                $nombres_prods_print[] = $det['cantidad'] . "x " . $det['nomProductos'];
                                             }
+                                            
+                                            // Texto plano preparado exclusivamente para los reportes (PDF, Excel, Imprimir)
+                                            $texto_productos_reporte = implode("\n", $nombres_prods_print);
                                     ?>
                                         <tr>
                                             <td><center><?php echo ++$contador; ?></center></td>
                                             <td><center><?php echo $fecha_creacion; ?></center></td>
                                             <td><center><?php echo $nro_venta; ?></center></td>
                                             <td>
+                                                <!-- En la vista web normal solo se muestra el botón limpio -->
                                                 <center>
                                                     <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modal-productos<?php echo $id_ventas; ?>">
                                                         <i class="fa fa-shopping-basket"></i> Productos
                                                     </button>
                                                 </center>
+                                                <!-- Valor oculto que DataTables leerá de forma interna al generar reportes -->
+                                                <span class="productos-reporte" style="display:none;"><?php echo $texto_productos_reporte; ?></span>
                                             </td>
                                             <td>
                                                 <center>
@@ -102,8 +122,6 @@ include_once __DIR__ . '/../app/controllers/ventas/listado_de_ventas_realizadas.
                                                             <input type="text" name="id_ventas" value="<?php echo $id_ventas; ?>" hidden>
                                                             <button type="submit" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i> Borrar</button>
                                                         </form>
-
-                                                       
                                                     </div>
                                                 </center>
                                             </td>
@@ -244,11 +262,11 @@ if (isset($ventas_datos) && is_array($ventas_datos)) {
 <?php include('../layout/mensajes.php'); ?>
 <?php include('../layout/parte2.php'); ?>
 
-<script>
+<<script>
     $(function () {
         $("#example1").DataTable({
 
-        "pageLength":10 ,
+        "pageLength": 10,
 
         "language": {
             "emptyTable": "No hay información",
@@ -280,17 +298,84 @@ if (isset($ventas_datos) && is_array($ventas_datos)) {
             text: 'Reportes',
             orientation: 'landscape',
             buttons: [{
-                text: 'Copiar',
                 extend: 'copy',
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4, 5],
+                    format: {
+                        body: function (data, row, column, node) {
+                            // Limpia y compacta los espacios en blanco y saltos de línea excesivos
+                            var text = $('<div>').html(data).text().replace(/\s+/g, ' ').trim();
+                            
+                            // Si es la columna de cliente (columna 4), extraemos solo el texto del botón
+                            if (column === 4) {
+                                var btnText = $(node).find('button').text().trim();
+                                if (btnText) return btnText;
+                            }
+                            return text;
+                        }
+                    }
+                }
             },{
                 extend: 'pdf',
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4, 5],
+                    format: {
+                        body: function (data, row, column, node) {
+                            var text = $('<div>').html(data).text().replace(/\s+/g, ' ').trim();
+                            if (column === 4) {
+                                var btnText = $(node).find('button').text().trim();
+                                if (btnText) return btnText;
+                            }
+                            return text;
+                        }
+                    }
+                }
             },{
                 extend: 'csv',
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4, 5],
+                    format: {
+                        body: function (data, row, column, node) {
+                            var text = $('<div>').html(data).text().replace(/\s+/g, ' ').trim();
+                            if (column === 4) {
+                                var btnText = $(node).find('button').text().trim();
+                                if (btnText) return btnText;
+                            }
+                            return text;
+                        }
+                    }
+                }
             },{
                 extend: 'excel',
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4, 5],
+                    format: {
+                        body: function (data, row, column, node) {
+                            var text = $('<div>').html(data).text().replace(/\s+/g, ' ').trim();
+                            if (column === 4) {
+                                var btnText = $(node).find('button').text().trim();
+                                if (btnText) return btnText;
+                            }
+                            return text;
+                        }
+                    }
+                }
             },{
                 text: 'Imprimir',
                 extend: 'print',
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4, 5],
+                    format: {
+                        body: function (data, row, column, node) {
+                            var text = $('<div>').html(data).text().replace(/\s+/g, ' ').trim();
+                            if (column === 4) {
+                                var btnText = $(node).find('button').text().trim();
+                                if (btnText) return btnText;
+                            }
+                            return text;
+                        }
+                    }
+                }
             }]
         },{
             extend: 'colvis',

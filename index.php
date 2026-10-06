@@ -39,7 +39,7 @@ include('app/controllers/clientes/listado_de_clientes.php');
 
     <!-- Caja 3 -->
     <div class="col-lg-3 col-6">
-        <div class="small-box bg-warning">
+        <div class="small-box bg-warning <?php echo ($tipoRol === 'admin') ? '' : 'cuadrito-bloqueado'; ?>">
             <div class="inner">
               <?php
               $contador_de_usuarios = 0;
@@ -67,7 +67,7 @@ include('app/controllers/clientes/listado_de_clientes.php');
 
     
      <div class="col-lg-3 col-6">
-        <div class="small-box bg-info">
+        <div class="small-box bg-info <?php echo ($tipoRol === 'admin') ? '' : 'cuadrito-bloqueado'; ?>">
             <div class="inner">
               <?php
               $contador_de_roles = 0;
@@ -94,7 +94,7 @@ include('app/controllers/clientes/listado_de_clientes.php');
 
 
     <div class="col-lg-3 col-6">
-        <div class="small-box bg-primary">
+        <div class="small-box bg-primary <?php echo (in_array($tipoRol, ['admin', 'inventario'])) ? '' : 'cuadrito-bloqueado'; ?>">
             <div class="inner">
               <?php
               $contador_de_productos = 0;
@@ -121,7 +121,7 @@ include('app/controllers/clientes/listado_de_clientes.php');
 
 
    <div class="col-lg-3 col-6">
-    <div class="small-box bg-dark"> <!-- O la clase de color que uses para proveedores -->
+    <div class="small-box bg-dark <?php echo (in_array($tipoRol, ['admin', 'inventario'])) ? '' : 'cuadrito-bloqueado'; ?>"> <!-- O la clase de color que uses para proveedores -->
         <div class="inner">
             <?php
             $contador_de_proveedores = 0;
@@ -147,7 +147,7 @@ include('app/controllers/clientes/listado_de_clientes.php');
 
 
 <div class="col-lg-3 col-6">
-    <div class="small-box bg-danger"> 
+    <div class="small-box bg-danger <?php echo (in_array($tipoRol, ['admin', 'inventario'])) ? '' : 'cuadrito-bloqueado'; ?>"> 
         <div class="inner">
           <?php
               $contador_de_compras = 0;
@@ -174,7 +174,7 @@ include('app/controllers/clientes/listado_de_clientes.php');
 
 
 <div class="col-lg-3 col-6">
-    <div class="small-box bg-success"> 
+    <div class="small-box bg-success <?php echo (in_array($tipoRol, ['admin', 'cajero'])) ? '' : 'cuadrito-bloqueado'; ?>"> 
         <div class="inner">
           <?php
               $contador_de_ventas = 0;
@@ -199,7 +199,7 @@ include('app/controllers/clientes/listado_de_clientes.php');
 </div>
 
 <div class="col-lg-3 col-6">
-    <div class="small-box bg-warning"> 
+    <div class="small-box bg-warning <?php echo (in_array($tipoRol, ['admin', 'cajero'])) ? '' : 'cuadrito-bloqueado'; ?>"> 
         <div class="inner">
           <?php
               $contador_de_clientes = 0;
@@ -238,6 +238,15 @@ include('app/controllers/clientes/listado_de_clientes.php');
 
 
 <?php include('layout/parte2.php');?>
+
+<style>
+  .cuadrito-bloqueado { background-color: #6c757d !important; }
+  .cuadrito-bloqueado a { pointer-events: none !important; cursor: default !important; }
+  .cuadrito-bloqueado .inner,
+  .cuadrito-bloqueado .inner h3,
+  .cuadrito-bloqueado .inner p,
+  .cuadrito-bloqueado .small-box-footer { color: #dee2e6 !important; }
+</style>
 
 
 

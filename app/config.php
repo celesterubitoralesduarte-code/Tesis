@@ -8,6 +8,10 @@ $servidor = "mysql:host=" . SERVIDOR .";port=". PUERTO. ";dbname=".BD . ";charse
 try{
 $pdo = new PDO($servidor, USUARIO, PASWORD);
 //echo "La conexión a la base de datos ha sido exitosa";
+
+// Configuración global para que TODAS las consultas usen la hora de Paraguay automáticamente
+    $pdo->exec("SET time_zone = '-04:00';");
+
 } catch (PDOException $e){
 //print_r($e);
 echo "ERROR AL CONECTARSE A LA BASE DE DATOS";

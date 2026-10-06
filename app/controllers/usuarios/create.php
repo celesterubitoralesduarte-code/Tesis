@@ -24,7 +24,7 @@ if (!$ciTrabajador || !$NomTrabajadores || !$usuarioTrabajador || !$pasworTrabaj
     $_SESSION['mensaje'] = "Faltan datos del formulario";
     $_SESSION['icono'] = "error";
 
-    header('Location: ' . $URL . '/trabajadores/update.php');
+    header('Location: ' . $URL . '/trabajadores/create.php');
     exit();
 }
 
@@ -35,7 +35,7 @@ if ($pasworTrabaj != $pasworTrabaj_repeat) {
     $_SESSION['mensaje'] = "Las contraseñas no son iguales";
     $_SESSION['icono'] = "error";
 
-    header('Location: ' . $URL . '/trabajadores/update.php');
+    header('Location: ' . $URL . '/trabajadores/create.php');
     exit();
 }
 
@@ -67,7 +67,7 @@ if ($sentencia->execute()) {
     $_SESSION['mensaje'] = "El trabajador se registró correctamente";
     $_SESSION['icono'] = "success";
 
-    header('Location: ' . $URL . '/trabajadores/index.php');
+    header('Location: ' . $URL . 'trabajadores');
     exit();
 
 } else {
@@ -75,7 +75,7 @@ if ($sentencia->execute()) {
     $_SESSION['mensaje'] = "No se pudo registrar el trabajador";
     $_SESSION['icono'] = "error";
 
-    header('Location: ' . $URL . '/trabajadores/update.php');
+    header('Location: ' . $URL . '/trabajadores/create.php');
     exit();
 }
 

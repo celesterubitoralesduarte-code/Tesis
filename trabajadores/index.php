@@ -4,30 +4,8 @@ include('../layout/sesion.php');
 
 include('../layout/parte1.php');
 
-
 include_once __DIR__ . '/../app/controllers/usuarios/listado_usuarios.php';
 ?>
-
-<?php if (isset($_SESSION['mensaje'])): ?>
-
-<script>
-    Swal.fire({
-       
-        icon: '<?php echo $_SESSION['icono']; ?>',
-        title: '<?php echo $_SESSION['mensaje']; ?>',
-        showConfirmButton: false,
-        timer: 2500
-    });
-</script> 
-
-<?php
-
-unset($_SESSION['mensaje']);
-unset($_SESSION['icono']);
-?>
-
-<?php endif; ?>
-
 
 <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
@@ -98,7 +76,7 @@ unset($_SESSION['icono']);
                        <?php
                         }
                         ?>
-                     </tbody>
+                   </tbody>
                   <tfoot>
                   <tr>
                           <th>Nro</th>
@@ -125,6 +103,41 @@ unset($_SESSION['icono']);
 
 <?php include('../layout/parte2.php');?>
 
+<?php if (isset($_SESSION['mensaje'])): ?>
+<script>
+    Swal.fire({
+        icon: '<?php echo $_SESSION['icono']; ?>',
+        title: '<?php echo $_SESSION['mensaje']; ?>',
+        showConfirmButton: false,
+        timer: 2000,
+        timerProgressBar: true,
+        willClose: () => {
+            // Recarga la página actual para limpiar el estado y mostrar la tabla completa
+            window.location.href = window.location.pathname;
+        }
+    });
+</script> 
+<?php
+    unset($_SESSION['mensaje']);
+    unset($_SESSION['icono']);
+endif;
+?>
+
+<!-- SECCIÓN CORREGIDA: La alerta se ejecuta AQUÍ, después de cargar parte2.php (donde vive jQuery y SweetAlert) -->
+<?php if (isset($_SESSION['mensaje'])): ?>
+<script>
+    Swal.fire({
+        icon: '<?php echo $_SESSION['icono']; ?>',
+        title: '<?php echo $_SESSION['mensaje']; ?>',
+        showConfirmButton: false,
+        timer: 2500
+    });
+</script> 
+<?php
+    unset($_SESSION['mensaje']);
+    unset($_SESSION['icono']);
+endif;
+?>
 
 <script>
 $(function () {

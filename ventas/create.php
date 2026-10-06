@@ -11,6 +11,7 @@ function ceros(int $numero){
     return str_pad($numero, 5, "0", STR_PAD_LEFT);
 }
 
+// Esto se queda porque es para los productos
 $sql_max_codigo = "SELECT MAX(CAST(SUBSTRING(codigo, 3) AS UNSIGNED)) AS max_codigo 
                     FROM productos 
                     WHERE codigo LIKE 'P-%'";
@@ -21,10 +22,15 @@ $row_max_codigo = $query_max_codigo->fetch(PDO::FETCH_ASSOC);
 $siguiente_numero = ($row_max_codigo['max_codigo'] ?? 0) + 1;
 $nuevo_codigo = "P-" . ceros($siguiente_numero);
 
-$contador_de_ventas = count($ventas_datos ?? []);
-$nro_venta_actual = $contador_de_ventas + 1;
-?>
 
+// --- AQUÍ USAMOS id_ventas PARA OBTENER EL CORRELATIVO REAL ---
+$sql_max_venta = "SELECT MAX(id_ventas) AS max_nro FROM ventas"; 
+$query_max_venta = $pdo->prepare($sql_max_venta);
+$query_max_venta->execute();
+$row_max_venta = $query_max_venta->fetch(PDO::FETCH_ASSOC);
+
+$nro_venta_actual = ($row_max_venta['max_nro'] ?? 0) + 1;
+?>
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
@@ -400,28 +406,7 @@ if (floatval($stockProductos) <= floatval($stockMinimo)) {
                     "previous": "Anterior"
                 }
             },
-            buttons: [{
-                extend: 'collection',
-                text: 'Reportes',
-                orientation: 'landscape',
-                buttons: [{
-                    text: 'Copiar',
-                    extend: 'copy',
-                }, {
-                    extend: 'pdf',
-                }, {
-                    extend: 'csv',
-                }, {
-                    extend: 'excel',
-                }, {
-                    text: 'Imprimir',
-                    extend: 'print',
-                }]
-            }, {
-                extend: 'colvis',
-                text: 'Visor de Columnas',
-                collectionLayout: 'fixed three-column',
-            }]
+         
         }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
     });
 
@@ -563,8 +548,8 @@ if (floatval($stockProductos) <= floatval($stockMinimo)) {
         $('#modal-buscar_cliente').modal('hide');
     });
 
-    function calcularCambio() {
-        var monto_cancelar = parseFloat($('#monto_a_cancelar_num').val()) || 0;
+    function calcularCambio() {  
+       var monto_cancelar = Math.round(parseFloat($('#monto_a_cancelar_num').val()) || 0);
         var total_pagado_raw = $('#total_pagado').val().replace(/\./g, '');
         var total_pagado = parseFloat(total_pagado_raw) || 0;
 
@@ -587,8 +572,7 @@ if (floatval($stockProductos) <= floatval($stockMinimo)) {
     $('#btn_guardar_venta').click(function() {
         var id_ventas = $('#nro_venta').val();
         var id_cliente = $('#id_cliente').val(); 
-        var monto_cancelar = parseFloat($('#monto_a_cancelar_num').val()) || 0;
-        
+       var monto_cancelar = Math.round(parseFloat($('#monto_a_cancelar_num').val()) || 0);
         var total_pagado_raw = $('#total_pagado').val().replace(/\./g, '');
         var total_pagado = parseFloat(total_pagado_raw) || 0;
 
@@ -615,30 +599,52 @@ if (floatval($stockProductos) <= floatval($stockMinimo)) {
                 id_cliente: id_cliente,
                 total_pagado: total_pagado
             },
-            success: function(respuesta) {
-                if (respuesta.trim().startsWith("success")) {
-                    var partes = respuesta.trim().split("-");
-                    var idVentaGenerada = partes.length > 1 ? partes[1] : id_ventas;
+           success: function(respuesta) {
+    if (respuesta.trim().startsWith("success")) {
+        var partes = respuesta.trim().split("-");
+        var idVentaGenerada = partes.length > 1 ? partes[1] : id_ventas;
 
-                    // Actualizar los enlaces de impresión con la venta recién procesada
-                    $('#link_imprimir_ticket').attr('href', '../app/controllers/ventas/imprimir_ticket.php?id=' + idVentaGenerada);
-                    $('#link_imprimir_factura').attr('href', 'imprimir_factura.php?id=' + idVentaGenerada);
-                    
-                    alert("¡Venta registrada con éxito!");
-                    window.location.href = window.location.pathname + '?t=' + new Date().getTime();
+        // 1. Asignamos los enlaces para el botón de "Imprimir última venta"
+        $('#link_imprimir_ticket').attr('href', '../app/controllers/ventas/imprimir_ticket.php?id=' + idVentaGenerada);
+        $('#link_imprimir_factura').attr('href', 'imprimir_factura.php?id=' + idVentaGenerada);
+        $('#link_imprimir_ticket, #link_imprimir_factura').attr('target', '_blank');
 
-                } else if (respuesta.trim() == "carrito_vacio") {
-                    alert("El carrito no tiene productos.");
-                } else if (respuesta.trim() == "stock_insuficiente") {
-                    alert("No hay suficiente stock para uno o más productos del carrito.");
-                } else {
-                    alert("Ocurrió un error al registrar la venta: " + respuesta);
-                }
-            }
+        alert("¡Venta registrada con éxito!");
+
+        // 2. LIMPIAR Y VACIAR LA VENTA ACTUAL EN PANTALLA:
+        
+        // Recargar la tabla del carrito (ahora aparecerá vacía porque el backend ya la borró)
+        cargarTablaCarrito();
+
+        // Limpiar campos de montos y totales
+        $('#total_pagado').val('');
+        $('#cambio').val('');
+        $('#monto_a_cancelar').val('0');
+        $('#monto_a_cancelar_num').val('0');
+
+        // Restaurar el cliente a "Consumidor Final" (o limpiar el ID según manejes tu formulario)
+        $('#id_cliente').val('1'); // O pon tu ID por defecto para consumidor ocasional
+        $('#nombre_cliente').val('Consumidor Final');
+        $('#ruc_ci_cliente').val('');
+
+        // 3. OPCIONAL (Recomendado): Recargar la página limpia pero después de unos segundos, 
+        // o generar un nuevo ID temporal para que el siguiente ticket no repita el número. 
+        // La forma más limpia si quieres mantener el menú desplegable activo sin congelar la sesión 
+        // es hacer un pequeño retraso o simplemente recargar la página pero pasando el ID generado en la URL:
+        // window.location.href = 'create.php?id_venta_nueva=true'; // (O recargar normal si prefieres)
+
+    } else if (respuesta.trim() == "carrito_vacio") {
+        alert("El carrito no tiene productos.");
+    } else if (respuesta.trim() == "stock_insuficiente") {
+        alert("No hay suficiente stock para uno o más productos del carrito.");
+    } else {
+        alert("Ocurrió un error al registrar la venta: " + respuesta);
+    }
+}
         });
     });
 
-    $('#btn_create_cliente').click(function () {
+ $('#btn_create_cliente').click(function () {
         var nombre_cliente  = $('#nombre_cliente_modal').val().trim();
         var ruc_ci_cliente  = $('#ruc_cliente_modal').val().trim();
         var celular_cliente = $('#celular_cliente_modal').val().trim();
@@ -657,7 +663,7 @@ if (floatval($stockProductos) <= floatval($stockMinimo)) {
         }
 
         $.ajax({
-            url: '../app/controllers/clientes/guardar_cliente_ajax.php',
+            url: '../app/controllers/clientes/guardar_cliente.php',
             type: 'POST',
             data: {
                 nombre_cliente: nombre_cliente,
@@ -671,21 +677,71 @@ if (floatval($stockProductos) <= floatval($stockMinimo)) {
                     alert("Cliente guardado con éxito.");
                     $('#modal-agregar_cliente').modal('hide');
                     
+                    // 1. Asignar los valores a los inputs principales de la venta
                     $('#id_cliente').val(response.id_cliente);
-                    $('#nombre_cliente').val(response.nombre);
+                    $('#nombre_cliente').val(response.nombre_cliente);
                     $('#ruc_ci_cliente').val(response.ruc_ci_cliente);
 
+                    // 2. Limpiar los campos del modal de agregar cliente
                     $('#nombre_cliente_modal').val('');
                     $('#ruc_cliente_modal').val('');
                     $('#celular_cliente_modal').val('');
                     $('#correo_cliente_modal').val('');
+
+                    // 3. RECUPERAR / ACTUALIZAR LA TABLA DEL MODAL DE BÚSQUEDA AL INSTANTE
+                    // Destruimos la instancia actual de DataTable para evitar errores de memoria o columnas
+                    if ($.fn.DataTable.isDataTable('#example2')) {
+                        $('#example2').DataTable().destroy();
+                    }
+
+                    // Hacemos una petición para obtener de nuevo la lista actualizada de clientes y reinsertarla en el HTML
+                    $.ajax({
+                        url: window.location.href, // O la ruta de tu vista actual de ventas
+                        type: 'GET',
+                        success: function(htmlRespuesta) {
+                            // Extraemos únicamente la tabla o la sección actualizada del DOM devuelto
+                            var nuevaTablaBody = $(htmlRespuesta).find('#example2 tbody').html();
+                            if (nuevaTablaBody) {
+                                $('#example2 tbody').html(nuevaTablaBody);
+                            }
+                            
+                            // Volvemos a inicializar DataTables en `#example2` con su configuración normal
+                            $("#example2").DataTable({
+                                "pageLength": 10,
+                                "language": {
+                                    "emptyTable": "No hay información",
+                                    "info": "Mostrando _START_ a _END_ de _TOTAL_ Usuarios",
+                                    "infoEmpty": "Mostrando 0 a 0 de 0 Usuarios",
+                                    "infoFiltered": "(Filtrado de _MAX_ total Usuarios)",
+                                    "thousands": ",",
+                                    "lengthMenu": "Mostrar _MENU_ Usuarios",
+                                    "loadingRecords": "Cargando...",
+                                    "processing": "Procesando...",
+                                    "search": "Buscar:",
+                                    "zeroRecords": "Sin resultados encontrados",
+                                    "paginate": {
+                                        "first": "Primero",
+                                        "last": "Último",
+                                        "next": "Siguiente",
+                                        "previous": "Anterior"
+                                    }
+                                },
+                                "responsive": true,
+                                "lengthChange": true,
+                                "autoWidth": false
+                            });
+                        }
+                    });
+
                 } else {
-                    alert("Error al guardar el cliente.");
+                    alert("Error al guardar el cliente: " + (response.message || ""));
                 }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert("Ocurrió un error en la petición AJAX: " + textStatus);
             }
         });
     });
-
     $('#btn_cancelar_venta').click(function() {
         var id_ventas = $('#nro_venta').val();
         
