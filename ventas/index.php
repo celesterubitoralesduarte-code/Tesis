@@ -103,7 +103,7 @@ include_once __DIR__ . '/../app/controllers/ventas/listado_de_ventas_realizadas.
                                                             <button type="submit" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i> Borrar</button>
                                                         </form>
 
-                                                        <a href="imprimir_factura.php?id=<?php echo $id_ventas; ?>" target="_blank" class="btn btn-success btn-sm"><i class="fa fa-print"></i> Imprimir</a>
+                                                       
                                                     </div>
                                                 </center>
                                             </td>
